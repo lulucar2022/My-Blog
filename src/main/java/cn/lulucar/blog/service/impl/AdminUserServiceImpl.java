@@ -112,8 +112,10 @@ public class AdminUserServiceImpl implements AdminUserService {
             // 执行sql语句，存入数据库
             // 执行成功则返回 true
             return adminUserMapper.updateByPrimaryKeySelective(adminUser) > 0;
+            
         }
         // 修改用户信息失败
+        log.error("updateName 执行失败");
         return false;
     }
 

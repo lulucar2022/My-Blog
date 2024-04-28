@@ -24,7 +24,7 @@
                                 <h3 class="card-title">基本信息</h3>
                             </div> <!-- /.card-body -->
                             <div class="card-body">
-                                <form role="form" id="userNameForm">
+                                <form role="form" id="userNameForm" th:action="#{/admin/profile/name}" method="post">
                                     <div class="form-group col-sm-8">
                                         <div class="alert alert-danger" id="updateUserName-info" style="display: none;"></div>
                                     </div>
@@ -33,7 +33,7 @@
                                         <label>登陆名称</label>
                                         <input type="text" class="form-control" id="loginUserName"
                                                name="loginUserName"
-                                               placeholder="请输入登陆名称" required="true" th:value="${loginUserName}">
+                                               placeholder="请输入登陆名称" required="true"  th:value="${loginUserName}">
                                     </div>
                                     <div class="form-group">
                                         <label>昵称</label>
@@ -42,7 +42,7 @@
                                                placeholder="请输入昵称" required="true" th:value="${nickName}">
                                     </div>
                                     <div class="card-footer">
-                                        <button type="button" id="updateUserNameButton" onsubmit="return false;"
+                                        <button type="submit" id="updateUserNameButton"
                                                 class="btn btn-danger float-right">确认修改
                                         </button>
                                     </div>

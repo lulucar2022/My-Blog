@@ -13,6 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author wenxiaolan
  * @ClassName AdminController
@@ -124,6 +127,43 @@ public class AdminController {
         return "admin/profile";
     }
 
+    /**
+     * 验证用户身份：首先，需要验证执行修改操作的用户是否是其账户的所有者。这通常通过验证用户的登录状态以及对应的会话信息来实现。
+     * 检查用户名可用性：在允许修改之前，需要检查新的用户名称是否已被其他用户占用。如果新的用户名已经被使用，应提示用户选择其他名称。
+     * 检查用户名格式：新的用户名应符合预定义的格式要求，例如长度限制、特殊字符限制等。不符合格式要求的用户名应被拒绝，并给出相应的提示。
+     * 清理缓存和会话：修改用户名后，可能需要清理相关的缓存和会话信息，以确保系统的一致性。
+     * @param request
+     * @param loginUserName
+     * @param nickName
+     * @return
+     */
+    @PostMapping("/profile/name")
+    @ResponseBody
+    public String nameUpdate(HttpServletRequest request,
+                             @RequestParam("loginUserName") String loginUserName,
+                             @RequestParam("nickName") String nickName) {
+        log.info("用户修改的loginUserName：{}\n用户修改的nickName：{}",loginUserName,nickName);
+        if (!StringUtils.hasText(loginUserName) || !StringUtils.hasText(nickName)) {
+            log.error("传入的loginUserName或者nickName为空");
+            return "参数不能为空";
+        }
+        // 定义用户名格式的正则表达式  
+        // 示例：用户名由字母、数字和下划线组成，长度在4到16个字符之间  
+        final Pattern USER_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{4,16}$");
+        Matcher matcher = USER_NAME_PATTERN.matcher(loginUserName);
+        if (!matcher.matches()) {
+            // 返回匹配结果 
+            log.error("用户名不合规");
+            return "用户名不合规";
+        }
+        Integer loginUserId = (int) request.getSession().getAttribute("loginUserId");
+        if (adminUserService.updateName(loginUserId,loginUserName, nickName)) {
+            return "success";
+        } else {
+            log.error("用户名修改失败");
+            return "修改失败";
+        }
+    }
     /**
      * 用户修改密码
      * @param request

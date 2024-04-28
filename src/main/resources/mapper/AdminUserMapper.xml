@@ -55,17 +55,16 @@
             </if>
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelective">
+    <update id="updateByPrimaryKeySelective" parameterType="cn.lulucar.blog.entity.AdminUser">
         update tb_admin_user
         <set>
-
             <if test="loginUserName != null">
                 login_user_name = #{loginUserName,jdbcType=VARCHAR},
             </if>
             <if test="loginPassword != null">
                 login_password = #{loginPassword,jdbcType=VARCHAR},
             </if>
-            <if test="nick_name != null">
+            <if test="nickName != null">
                 nick_name = #{nickName,jdbcType=VARCHAR},
             </if>
             <if test="locked != null">
