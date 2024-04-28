@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lulucar.blog.mapper.BlogLinkMapper">
+    <resultMap id="BaseResultMap" type="cn.lulucar.blog.entity.BlogLink">
+        <id column="link_id" jdbcType="INTEGER" property="linkId"/>
+        <result column="link_type" jdbcType="TINYINT" property="linkType"/>
+        <result column="link_name" jdbcType="VARCHAR" property="linkName"/>
+        <result column="link_url" jdbcType="VARCHAR" property="linkUrl"/>
+        <result column="link_description" jdbcType="VARCHAR" property="linkDescription"/>
+        <result column="link_rank" jdbcType="INTEGER" property="linkRank"/>
+        <result column="is_deleted" jdbcType="TINYINT" property="isDeleted"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        link_id, link_type, link_name, link_url, link_description, link_rank, is_deleted,
+        create_time
+    </sql>
+
+    <insert id="insert" parameterType="cn.lulucar.blog.entity.BlogLink">
+        INSERT INTO tb_link (link_id, link_type, link_name,
+                             link_url, link_description, link_rank,
+                             is_deleted, create_time)
+        VALUES (#{linkId,jdbcType=INTEGER}, #{linkType,jdbcType=TINYINT}, #{linkName,jdbcType=VARCHAR},
+                #{linkUrl,jdbcType=VARCHAR}, #{linkDescription,jdbcType=VARCHAR}, #{linkRank,jdbcType=INTEGER},
+                #{isDeleted,jdbcType=TINYINT}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="cn.lulucar.blog.entity.BlogLink">
+        INSERT INTO tb_link
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="linkId != null">
+                link_id,
+            </if>
+            <if test="linkType != null">
+                link_type,
+            </if>
+            <if test="linkName != null">
+                link_name,
+            </if>
+            <if test="linkUrl != null">
+                link_url,
+            </if>
+            <if test="linkDescription != null">
+                link_description,
+            </if>
+            <if test="linkRank != null">
+                link_rank,
+            </if>
+            <if test="isDeleted != null">
+                is_deleted,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="linkId != null">
+                #{linkId,jdbcType=INTEGER},
+            </if>
+            <if test="linkType != null">
+                #{linkType,jdbcType=TINYINT},
+            </if>
+            <if test="linkName != null">
+                #{linkName,jdbcType=VARCHAR},
+            </if>
+            <if test="linkUrl != null">
+                #{linkUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="linkDescription != null">
+                #{linkDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="linkRank != null">
+                #{linkRank,jdbcType=INTEGER},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="cn.lulucar.blog.entity.BlogLink">
+
+        UPDATE tb_link
+        <set>
+            <if test="linkType != null">
+                link_type = #{linkType,jdbcType=TINYINT},
+            </if>
+            <if test="linkName != null">
+                link_name = #{linkName,jdbcType=VARCHAR},
+            </if>
+            <if test="linkUrl != null">
+                link_url = #{linkUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="linkDescription != null">
+                link_description = #{linkDescription,jdbcType=VARCHAR},
+            </if>
+            <if test="linkRank != null">
+                link_rank = #{linkRank,jdbcType=INTEGER},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted = #{isDeleted,jdbcType=TINYINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        WHERE link_id = #{linkId,jdbcType=INTEGER}
+
+    </update>
+    <update id="updateByPrimaryKey" parameterType="cn.lulucar.blog.entity.BlogLink">
+        UPDATE tb_link
+        SET link_type = #{linkType,jdbcType=TINYINT},
+            link_name = #{linkName,jdbcType=VARCHAR},
+            link_url = #{linkUrl,jdbcType=VARCHAR},
+            link_description = #{linkDescription,jdbcType=VARCHAR},
+            link_rank = #{linkRank,jdbcType=INTEGER},
+            is_deleted = #{isDeleted,jdbcType=TINYINT},
+            create_time = #{createTime,jdbcType=TIMESTAMP}
+        WHERE link_id = #{linkId,jdbcType=INTEGER}
+    </update>
+    <update id="deleteByPrimaryKey" >
+        UPDATE tb_link
+        SET is_deleted = 1
+        WHERE link_id = #{linkId,jdbcType=INTEGER}
+    </update>
+    <update id="deleteBatch">
+        UPDATE tb_link
+        SET is_deleted=1 WHERE link_id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM tb_link
+        WHERE is_deleted = 0 AND link_id = #{linkId,jdbcType=INTEGER}
+    </select>
+    <select id="findLinkList" parameterType="map" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM tb_link
+        WHERE is_deleted = 0
+        ORDER BY link_id DESC
+        <if test="start!=null and limit!=null">
+            LIMIT #{start},#{limit}
+        </if>
+    </select>
+    <select id="getTotalLinks" parameterType="map" resultType="int">
+        SELECT COUNT(*) FROM tb_link
+        WHERE is_deleted = 0
+    </select>
+</mapper>

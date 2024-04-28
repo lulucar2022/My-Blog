@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lulucar.blog.mapper.BlogTagRelationMapper">
+    <resultMap id="BaseResultMap" type="cn.lulucar.blog.entity.BlogTagRelation">
+        <id column="relation_id" jdbcType="BIGINT" property="relationId"/>
+        <result column="blog_id" jdbcType="BIGINT" property="blogId"/>
+        <result column="tag_id" jdbcType="INTEGER" property="tagId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        relation_id, blog_id, tag_id, create_time
+    </sql>
+    <insert id="insert" parameterType="cn.lulucar.blog.entity.BlogTagRelation">
+        INSERT INTO tb_blog_tag_relation (relation_id, blog_id, tag_id, create_time)
+        VALUES (#{relationId,jdbcType=BIGINT}, #{blogId,jdbcType=BIGINT}, #{tagId,jdbcType=INTEGER},
+                #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="cn.lulucar.blog.entity.BlogTagRelation">
+        insert into tb_blog_tag_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="relationId != null">
+                relation_id,
+            </if>
+            <if test="blogId != null">
+                blog_id,
+            </if>
+            <if test="tagId != null">
+                tag_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="relationId != null">
+                #{relationId,jdbcType=BIGINT},
+            </if>
+            <if test="blogId != null">
+                #{blogId,jdbcType=BIGINT},
+            </if>
+            <if test="tagId != null">
+                #{tagId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT into tb_blog_tag_relation(blog_id,tag_id)
+        VALUES
+        <foreach collection="relationList" item="item" separator=",">
+            (#{item.blogId,jdbcType=BIGINT},#{item.tagId,jdbcType=INTEGER})
+        </foreach>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="cn.lulucar.blog.entity.BlogTagRelation">
+        UPDATE tb_blog_tag_relation
+        <set>
+            <if test="blogId != null">
+                blog_id = #{blogId,jdbcType=BIGINT}
+            </if>
+            <if test="tagId != null">
+                tag_id = #{tagId,jdbcType=INTEGER}
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP}
+            </if>
+        </set>
+        WHERE relation_id = #{relationId,jdbcType=BIGINT}
+
+    </update>
+    <update id="updateByPrimaryKey" parameterType="cn.lulucar.blog.entity.BlogTagRelation">
+        UPDATE tb_blog_tag_relation
+        SET blog_id = #{blogId,jdbcType=BIGINT},
+            tag_id = #{tagId,jdbcType=INTEGER},
+            create_time = #{createTime,jdbcType=TIMESTAMP}
+        WHERE relation_id = #{relationId,jdbcType=BIGINT}
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        DELETE FROM tb_blog_tag_relation
+        WHERE relation_id = #{relationId,jdbcType=BIGINT}
+    </delete>
+    <delete id="deleteByBlogId" parameterType="java.lang.Long">
+        DELETE FROM tb_blog_tag_relation
+        WHERE blog_id = #{blogId,jdbcType=BIGINT}
+    </delete>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM tb_blog_tag_relation
+        WHERE relation_id = #{relationId,jdbcType=BIGINT}
+    </select>
+    <select id="selectByBlogIdAndTagId" resultMap="BaseResultMap">
+        SELECT
+            <include refid="Base_Column_List"/>
+        FROM tb_blog_tag_relation
+        WHERE blog_id = #{blogId,jdbcType=BIGINT} AND tag_id = #{tagId,jdbcType=INTEGER}
+    </select>
+    <select id="selectDistinctTagIds" resultType="java.lang.Long">
+        SELECT DISTINCT(tag_id)
+        FROM tb_blog_tag_relation
+        WHERE tag_id IN
+        <foreach collection="array" item="tagId" open="(" close=")" separator=",">
+            #{tagId}
+        </foreach>
+    </select>
+</mapper>
