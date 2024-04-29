@@ -133,8 +133,8 @@ public class AdminController {
      * 检查用户名格式：新的用户名应符合预定义的格式要求，例如长度限制、特殊字符限制等。不符合格式要求的用户名应被拒绝，并给出相应的提示。
      * 清理缓存和会话：修改用户名后，可能需要清理相关的缓存和会话信息，以确保系统的一致性。
      * @param request
-     * @param loginUserName
-     * @param nickName
+     * @param loginUserName 登录名称
+     * @param nickName 昵称
      * @return
      */
     @PostMapping("/profile/name")
@@ -176,8 +176,26 @@ public class AdminController {
     public String passwordUpdate(HttpServletRequest request, 
                                  @RequestParam("originalPassword") String originalPassword,
                                  @RequestParam("newPassword") String newPassword) {
+        final int MIN_LENGTH = 8;
+        final int MAX_LENGTH = 20;
+        final String PASSWORD_PATTERN =
+                "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$";
+        Pattern pattern = Pattern.compile(PASSWORD_PATTERN);
+        Matcher matcher = pattern.matcher(newPassword);
         if (!StringUtils.hasText(originalPassword) || !StringUtils.hasText(newPassword)) {
             return "参数不能为空";
+        }
+        if (newPassword.length() < MIN_LENGTH ) {
+            log.error("密码长度为{}，小于 8",newPassword.length());
+            return "密码长度小于 8，不符合";
+        }
+        if (newPassword.length() > MAX_LENGTH) {
+            log.error("密码长度为{}，大于 20",newPassword.length());
+            return "密码长度大于 20，不符合";
+        }
+        if (!matcher.matches()){
+            log.error("密码至少要1个大小写字母和1个数字");
+            return "密码至少要1个大小写字母和1个数字";
         }
         Integer loginUserId = (int) request.getSession().getAttribute("loginUserId");
         if (adminUserService.updatePassword(loginUserId, originalPassword, newPassword)) {

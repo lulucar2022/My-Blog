@@ -10,7 +10,7 @@ public class BlogApplication {
 
     public static void main(String[] args) {
         SpringApplication springApplication = new SpringApplication(BlogApplication.class);
-        springApplication.setBannerMode(Banner.Mode.OFF);
+        springApplication.setBannerMode(Banner.Mode.CONSOLE);
         springApplication.run(args);
     }
 

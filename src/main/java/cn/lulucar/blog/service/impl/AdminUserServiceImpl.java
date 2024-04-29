@@ -77,10 +77,10 @@ public class AdminUserServiceImpl implements AdminUserService {
         AdminUser adminUser = adminUserMapper.selectByPrimaryKey(loginUserId);
         // 判断用户非空，才能修改密码
         if (adminUser != null && newPassword != null && !(newPassword.isEmpty()) ) {
-            String originalPasswordEncoded = PasswordEncodeUtil.encode(originalPassword);
-            String newPasswordEncoded = PasswordEncodeUtil.encode(newPassword);
+            String newPasswordEncoded = passwordEncoder.encode(newPassword);
             // 判断 旧密码是否正确
-            if (originalPasswordEncoded.equals(adminUser.getLoginPassword())){
+            // 用 Bcrypt提供的密码匹配方法
+            if (passwordEncoder.matches(originalPassword,adminUser.getLoginPassword())){
                 // 把加密过后的新密码替换旧密码
                 adminUser.setLoginPassword(newPasswordEncoded);
                 // 执行sql语句存入数据库
