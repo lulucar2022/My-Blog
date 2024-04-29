@@ -37,7 +37,7 @@ public class AdminController {
     private TagService tagService;
     @Resource
     private CommentService commentService;
-    @Autowired
+    @Resource
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     // 登录页面
     @GetMapping({"/login"})
