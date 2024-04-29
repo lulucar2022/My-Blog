@@ -208,7 +208,18 @@ public class AdminController {
             return "修改失败";
         }
     }
-    
-    
+
+    /**
+     * 用户退出
+     * @param request
+     * @return 跳转到登录页面
+     */
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        request.getSession().removeAttribute("loginUserId");
+        request.getSession().removeAttribute("loginUser");
+        request.getSession().removeAttribute("errorMsg");
+        return "admin/login";
+    }
     
 }
