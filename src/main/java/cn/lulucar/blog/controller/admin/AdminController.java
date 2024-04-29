@@ -7,7 +7,6 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -37,8 +36,7 @@ public class AdminController {
     private TagService tagService;
     @Resource
     private CommentService commentService;
-    @Resource
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+   
     // 登录页面
     @GetMapping({"/login"})
     public String login() {
@@ -132,10 +130,10 @@ public class AdminController {
      * 检查用户名可用性：在允许修改之前，需要检查新的用户名称是否已被其他用户占用。如果新的用户名已经被使用，应提示用户选择其他名称。
      * 检查用户名格式：新的用户名应符合预定义的格式要求，例如长度限制、特殊字符限制等。不符合格式要求的用户名应被拒绝，并给出相应的提示。
      * 清理缓存和会话：修改用户名后，可能需要清理相关的缓存和会话信息，以确保系统的一致性。
-     * @param request
+     * @param request 请求
      * @param loginUserName 登录名称
      * @param nickName 昵称
-     * @return
+     * @return 返回响应信息
      */
     @PostMapping("/profile/name")
     @ResponseBody
@@ -166,10 +164,10 @@ public class AdminController {
     }
     /**
      * 用户修改密码
-     * @param request
+     * @param request 请求
      * @param originalPassword 旧密码
      * @param newPassword 新密码
-     * @return
+     * @return 返回响应信息
      */
     @PostMapping("/profile/password")
     @ResponseBody
@@ -211,7 +209,7 @@ public class AdminController {
 
     /**
      * 用户退出
-     * @param request
+     * @param request 请求
      * @return 跳转到登录页面
      */
     @GetMapping("/logout")
