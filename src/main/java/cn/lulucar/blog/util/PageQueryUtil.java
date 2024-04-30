@@ -1,6 +1,7 @@
 package cn.lulucar.blog.util;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,7 +11,8 @@ import java.util.Map;
  * @ClassName PageQueryUtil
  * @date 2024/4/21 14:32
  */
-
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class PageQueryUtil extends LinkedHashMap<String,Object> {
     //当前页码
     private int page;
@@ -27,24 +29,6 @@ public class PageQueryUtil extends LinkedHashMap<String,Object> {
         this.put("page", page);
         this.put("limit", limit);
     }
-
-    // 获取当前页码
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-    // 获取每页总数
-    public int getLimit() {
-        return limit;
-    }
-
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
     @Override
     public String toString() {
         return "PageUtil{" +
