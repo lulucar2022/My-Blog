@@ -21,7 +21,7 @@ public interface BlogService {
     /**
      * 根据id获取详情
      *
-     * @param blogId
+     * @param blogId 博客Id
      * @return
      */
     Blog getBlogById(Long blogId);
@@ -29,7 +29,7 @@ public interface BlogService {
     /**
      * 后台修改
      *
-     * @param blog
+     * @param blog 博客实体类
      * @return
      */
     String updateBlog(Blog blog);
@@ -37,7 +37,7 @@ public interface BlogService {
     /**
      * 获取首页文章列表
      *
-     * @param page
+     * @param page 当前页码
      * @return
      */
     PageResult getBlogsForIndexPage(int page);
@@ -70,11 +70,11 @@ public interface BlogService {
     /**
      * 根据分类获取文章列表
      *
-     * @param categoryId
+     * @param categoryName
      * @param page
      * @return
      */
-    PageResult getBlogsPageByCategory(String categoryId, int page);
+    PageResult getBlogsPageByCategory(String categoryName, int page);
 
     /**
      * 根据搜索获取文章列表
