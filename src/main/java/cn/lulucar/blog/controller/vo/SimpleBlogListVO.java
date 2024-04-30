@@ -10,12 +10,5 @@ public class SimpleBlogListVO implements Serializable {
     private Long blogId;
 
     private String blogTitle;
-
-    public void setBlogId(Long blogId) {
-        this.blogId = blogId;
-    }
-
-    public void setBlogTitle(String blogTitle) {
-        this.blogTitle = blogTitle;
-    }
+    
 }
