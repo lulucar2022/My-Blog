@@ -264,8 +264,8 @@ public class BlogServiceImpl implements BlogService {
      * 首页侧边栏数据列表
      * 0-点击最多 1-最新发布
      * SimpleBlogListVO 只包含blog的id和title
-     * @param type
-     * @return
+     * @param type 类型
+     * @return 返回博客数据列表
      */
     @Override
     public List<SimpleBlogListVO> getBlogListForIndexPage(int type) {
