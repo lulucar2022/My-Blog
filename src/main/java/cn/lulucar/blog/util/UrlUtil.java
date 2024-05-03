@@ -5,7 +5,7 @@ import org.springframework.util.StringUtils;
 import java.net.URI;
 
 
-public class MyBlogUtils {
+public class UrlUtil {
 
     public static URI getHost(URI uri) {
         URI effectiveURI = null;
