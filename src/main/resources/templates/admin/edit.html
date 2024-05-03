@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<header th:replace="admin/header::header-fragment"></header>
+<header th:replace="~{admin/header::header-fragment}"></header>
 <body class="hold-transition sidebar-mini">
 <link th:href="@{/admin/plugins/editormd/css/editormd.css}" rel="stylesheet"/>
 <link th:href="@{/admin/plugins/tagsinput/jquery.tagsinput.css}" rel="stylesheet"/>
 <link th:href="@{/admin/plugins/select2/select2.css}" rel="stylesheet"/>
 <div class="wrapper">
     <!-- 引入页面头header-fragment -->
-    <div th:replace="admin/header::header-nav"></div>
+    <div th:replace="~{admin/header::header-nav}"></div>
     <!-- 引入工具栏sidebar-fragment -->
-    <div th:replace="admin/sidebar::sidebar-fragment(${path})"></div>
+    <div th:replace="~{admin/sidebar::sidebar-fragment(${path})}"></div>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -29,23 +29,24 @@
                         <form id="blogForm" onsubmit="return false;">
                             <div class="form-group" style="display:flex;">
                                 <input type="hidden" id="blogId" name="blogId" th:value="${blog!=null and blog.blogId!=null }?${blog.blogId}: 0">
+                                <label for="blogName"></label>
                                 <input type="text" class="form-control col-sm-6" id="blogName" name="blogName"
-                                       placeholder="*请输入文章标题(必填)"
-                                       th:value="${blog!=null and blog.blogTitle!=null }?${blog.blogTitle}: ''"
-                                       required="true">
+                                                                     placeholder="*请输入文章标题(必填)"
+                                                                     th:value="${blog!=null and blog.blogTitle!=null }?${blog.blogTitle}: ''"
+                                                                     required="true">
                                 &nbsp;&nbsp;
-                                <input type="text" class="form-control" id="blogTags" name="blogTags"
-                                       placeholder="请输入文章标签"
-                                       th:value="${blog!=null and blog.blogTags!=null }?${blog.blogTags}: ''"
-                                       style="width: 100%;">
+                                <label for="blogTags"></label><input type="text" class="form-control" id="blogTags" name="blogTags"
+                                                                     placeholder="请输入文章标签"
+                                                                     th:value="${blog!=null and blog.blogTags!=null }?${blog.blogTags}: ''"
+                                                                     style="width: 100%;">
                             </div>
                             <div class="form-group" style="display:flex;">
-                                <input type="text" class="form-control col-sm-6" id="blogSubUrl"
-                                       name="blogSubUrl"
-                                       th:value="${blog!=null and blog.blogSubUrl!=null }?${blog.blogSubUrl}: ''"
-                                       placeholder="请输入自定义路径,如:springboot-mybatis,默认为id"> &nbsp;&nbsp;
-                                <select class="form-control select2" style="width: 100%;" id="blogCategoryId"
-                                        data-placeholder="请选择分类...">
+                                <label for="blogSubUrl"></label><input type="text" class="form-control col-sm-6" id="blogSubUrl"
+                                                                       name="blogSubUrl"
+                                                                       th:value="${blog!=null and blog.blogSubUrl!=null }?${blog.blogSubUrl}: ''"
+                                                                       placeholder="请输入自定义路径,如:springboot-mybatis,默认为id"> &nbsp;&nbsp;
+                                <label for="blogCategoryId"></label><select class="form-control select2" style="width: 100%;" id="blogCategoryId"
+                                                                            data-placeholder="请选择分类...">
                                     <th:block th:if="${null == categories}">
                                         <option value="0" selected="selected">默认分类</option>
                                     </th:block>
@@ -145,7 +146,7 @@
     </div>
     <!-- /.content-wrapper -->
     <!-- 引入页脚footer-fragment -->
-    <div th:replace="admin/footer::footer-fragment"></div>
+    <div th:replace="~{admin/footer::footer-fragment}"></div>
 </div>
 <!-- jQuery -->
 <script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
