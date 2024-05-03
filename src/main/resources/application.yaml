@@ -20,9 +20,15 @@ spring:
       max-lifetime: 30000
       connection-timeout: 30000
       connection-test-query: SELECT 1
+      
   thymeleaf:
     cache: false
-
+    
+  servlet:
+    # 文件上传大小限制
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 10MB
 
 # 整合 mybatis 配置
 mybatis:
@@ -45,3 +51,9 @@ logging:
       - cn.lulucar.blog.mapper
   level:
     group1: debug
+    
+    
+# 定义文件上传目录  
+file: 
+  upload: 
+    dir: E:/upload/
