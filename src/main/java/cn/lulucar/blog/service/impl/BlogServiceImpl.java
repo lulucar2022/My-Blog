@@ -283,7 +283,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     /**
-     * 文章详情
+     * 查询文章详情
      *
      * @param blogId 博客id
      * @return 返回 BlogDetailVO

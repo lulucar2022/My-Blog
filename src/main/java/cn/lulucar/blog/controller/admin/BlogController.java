@@ -1,20 +1,29 @@
 package cn.lulucar.blog.controller.admin;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.lulucar.blog.config.Constants;
 import cn.lulucar.blog.entity.Blog;
 import cn.lulucar.blog.service.BlogService;
 import cn.lulucar.blog.service.CategoryService;
-import cn.lulucar.blog.util.PageQueryUtil;
-import cn.lulucar.blog.util.Result;
-import cn.lulucar.blog.util.ResultGenerator;
+import cn.lulucar.blog.util.*;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.xml.crypto.URIReferenceException;
+import java.io.EOFException;
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Map;
 
 /**
@@ -31,7 +40,6 @@ public class BlogController {
     @Resource
     private CategoryService categoryService;
     
-    // todo 完成 Blog 的功能
 
     /**
      * 博客列表数据
@@ -42,6 +50,7 @@ public class BlogController {
     @ResponseBody
     public Result list(@RequestParam Map<String, Object> params) {
         if (ObjectUtils.isEmpty(params.get("page")) || ObjectUtils.isEmpty(params.get("limit"))) {
+            log.error("分页参数异常：page={}，limit={}",params.get("page"),params.get("limit"));
             return ResultGenerator.genFailResult("参数异常");
         }
         PageQueryUtil pageQueryUtil = new PageQueryUtil(params);
@@ -86,6 +95,7 @@ public class BlogController {
             return "error/error_400";
         }
         log.info("blogId={}",blogId);
+        log.info("blog内容：{}",blog.getBlogContent());
         request.setAttribute("blog", blog);
         request.setAttribute("categories", categoryService.getAllCategories());
         return "admin/edit";
@@ -212,15 +222,76 @@ public class BlogController {
         blog.setBlogTags(blogTags);
         blog.setBlogContent(blogContent);
         blog.setBlogCoverImage(blogCoverImage);
+        log.info("图片路径：{}",blogCoverImage);
         blog.setBlogStatus(blogStatus);
         blog.setEnableComment(enableComment);
         String updateBlogResult = blogService.updateBlog(blog);
         if ("success".equals(updateBlogResult)) {
+            log.info("文章修改成功");
             return ResultGenerator.genSuccessResult("修改成功");
         } else {
             return ResultGenerator.genFailResult(updateBlogResult);
         }
     }
     
-    
+    @PostMapping("/blogs/md/uploadfile")
+    public void uploadFileByEditormd(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     @RequestParam(name = "editormd-image-file", required = true)
+                                     MultipartFile file) throws IOException, URISyntaxException {
+        String fileName = file.getOriginalFilename();
+        log.debug("原文件名称：{}",fileName);
+        assert fileName != null;
+        // 生成文件名方法
+        String newFileName = FileNameGenerator.generateNewFileName(fileName);
+        log.debug("新文件名称：{}",newFileName);
+        // 创建文件
+        File destFile = new File(Constants.FILE_UPLOAD_DIC + newFileName);
+        log.debug("目标文件名称：{}",destFile);
+        // 生成文件URL
+        String fileUrl = UrlUtil.getHost(new URI(request.getRequestURI() )) + "/upload/" + newFileName;
+        log.debug("文件url：{}",fileUrl);
+        // 文件存放目录
+        File fileDirectory = new File(Constants.FILE_UPLOAD_DIC);
+        log.debug("文件目录：{}",fileDirectory);
+        // 确保文件目录存在
+        try {
+            if (!fileDirectory.exists()) {
+                if (!fileDirectory.mkdir()) {
+                    throw new IOException("文件创建失败，路径为："+fileDirectory);
+                }
+            }
+            // 传输文件
+            file.transferTo(destFile);
+            // 请求响应设置
+            request.setCharacterEncoding("utf-8");
+            response.setHeader("Content-Type", "text/html");
+            response.getWriter().write("{\"success\": 1, \"message\":\"success\",\"url\":\"" + fileUrl + "\"}");
+        } catch (IOException e) {
+            response.getWriter().write("{\"success\":0}");
+        }
+
+    }
+
+    /**
+     * 批量删除博客
+     * @param ids 博客ids
+     * @return
+     */
+    @PostMapping("/blogs/delete")
+    @ResponseBody
+    public Result delete(@RequestBody Integer[] ids){
+        // 未传参数
+        if (ids.length < 1) {
+            log.error("参数异常：{}", (Object[]) ids);
+            return ResultGenerator.genFailResult("参数异常！");
+        }
+        if (blogService.deleteBatch(ids)) {
+            log.info("博客删除成功ids：{}", (Object[]) ids);
+            return ResultGenerator.genSuccessResult();
+        } else {
+            log.error("博客删除失败");
+            return ResultGenerator.genFailResult("博客删除失败");
+        }
+    }
 }
