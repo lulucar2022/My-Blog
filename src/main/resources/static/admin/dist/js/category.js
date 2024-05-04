@@ -134,7 +134,7 @@ function deleteCagegory() {
         return;
     }
     swal({
-        title: "确认弹框",
+        title: "删除注意",
         text: "确认要删除数据吗?",
         icon: "warning",
         buttons: true,
