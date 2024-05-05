@@ -11,12 +11,12 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-public class Result<T> implements Serializable {
+public class Result implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private int resultCode;
     private String message;
-    private T data;
+    private Object data;
     
 
     public Result(int resultCode, String message) {
