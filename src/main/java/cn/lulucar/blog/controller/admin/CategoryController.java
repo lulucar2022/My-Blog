@@ -25,7 +25,6 @@ import java.util.Map;
 public class CategoryController {
     @Resource
     CategoryService categoryService;
-    // todo 分类页面访问
 
     /**
      * 分类页面访问
@@ -37,7 +36,6 @@ public class CategoryController {
         request.setAttribute("path","categories");
         return "admin/category";
     }
-    // todo 分类列表
     
     @GetMapping("/categories/list")
     @ResponseBody
@@ -50,7 +48,6 @@ public class CategoryController {
         PageQueryUtil pageUtil = new PageQueryUtil(params);
         return ResultGenerator.genSuccessResult(categoryService.getBlogCategoryPage(pageUtil));
     }
-    // todo 分类添加
     
     @PostMapping("/categories/save")
     @ResponseBody
@@ -73,7 +70,6 @@ public class CategoryController {
             return ResultGenerator.genFailResult("分类添加失败");
         }
     }
-    // todo 分类修改
     @PostMapping("/categories/update")
     @ResponseBody
     public Result update(@RequestParam("categoryId") Integer categoryId,
@@ -95,7 +91,6 @@ public class CategoryController {
             return ResultGenerator.genFailResult("分类修改失败");
         }
     }
-    // todo 分类删除
     
     @PostMapping("/categories/delete")
     @ResponseBody
