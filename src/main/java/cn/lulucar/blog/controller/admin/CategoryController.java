@@ -24,7 +24,7 @@ import java.util.Map;
 @RequestMapping("/admin")
 public class CategoryController {
     @Resource
-    CategoryService categoryService;
+    private CategoryService categoryService;
 
     /**
      * 分类页面访问
