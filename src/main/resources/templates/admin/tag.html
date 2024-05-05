@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<header th:replace="admin/header::header-fragment"></header>
+<header th:replace="~{admin/header::header-fragment}"></header>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
     <!-- 引入页面头header-fragment -->
-    <div th:replace="admin/header::header-nav"></div>
+    <div th:replace="~{admin/header::header-nav}"></div>
     <!-- 引入工具栏sidebar-fragment -->
-    <div th:replace="admin/sidebar::sidebar-fragment(${path})"></div>
+    <div th:replace="~{admin/sidebar::sidebar-fragment(${path})}"></div>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -24,7 +24,7 @@
                     <div class="card-body">
                         <div class="grid-btn">
                             <input type="text" class="form-control col-1" id="tagName" name="tagName"
-                                       placeholder="标签名称" required="true">&nbsp;&nbsp;&nbsp;
+                                       placeholder="标签名称" required="true">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <button class="btn btn-info" onclick="tagAdd()"><i
                                     class="fa fa-plus"></i>&nbsp;新增
                             </button>
@@ -43,7 +43,7 @@
     </div>
     <!-- /.content-wrapper -->
     <!-- 引入页脚footer-fragment -->
-    <div th:replace="admin/footer::footer-fragment"></div>
+    <div th:replace="~{admin/footer::footer-fragment}"></div>
 </div>
 <!-- jQuery -->
 <script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
