@@ -6,8 +6,8 @@ public interface ConfigService {
     /**
      * 修改配置项
      *
-     * @param configName
-     * @param configValue
+     * @param configName 配置名称
+     * @param configValue 配置值
      * @return
      */
     int updateConfig(String configName, String configValue);
@@ -15,7 +15,7 @@ public interface ConfigService {
     /**
      * 获取所有的配置项
      *
-     * @return
+     * @return 返回所有配置信息
      */
     Map<String,String> getAllConfigs();
 }
