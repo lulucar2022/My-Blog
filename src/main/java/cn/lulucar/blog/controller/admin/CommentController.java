@@ -25,13 +25,23 @@ import java.util.Map;
 public class CommentController {
     @Resource
     private CommentService commentService;
-    
+
+    /**
+     * 评论页面访问
+     * @param request http请求
+     * @return 跳转到评论管理页面
+     */
     @GetMapping("/comments")
     public String commentPage(HttpServletRequest request) {
         request.setAttribute("path","comments");
         return "admin/comment";
     }
-    
+
+    /**
+     * 查询评论列表
+     * @param params 分页参数
+     * @return 评论的分页列表
+     */
     @GetMapping("/comments/list")
     @ResponseBody
     public Result list(@RequestParam Map<String, Object> params) {
@@ -42,8 +52,12 @@ public class CommentController {
         PageQueryUtil pageUtil = new PageQueryUtil(params);
         return ResultGenerator.genSuccessResult(commentService.getCommentsPage(pageUtil));
     }
-    
-    // todo 批量评论审核
+
+    /**
+     * 批量评论审核
+     * @param ids 评论ids
+     * @return 返回操作结果
+     */
     @PostMapping("/comments/checkDone")
     @ResponseBody
     public Result checkDone(@RequestBody Integer[] ids) {
@@ -61,8 +75,13 @@ public class CommentController {
             return ResultGenerator.genFailResult("评论审核失败");
         }
     }
-    
-    // todo 回复评论
+
+    /**
+     * 评论回复
+     * @param commentId 评论id
+     * @param replyBody 回复消息
+     * @return 返回操作结果
+     */
     @PostMapping("/comments/reply")
     @ResponseBody
     public Result reply(@RequestParam("commentId") Long commentId,
@@ -81,8 +100,12 @@ public class CommentController {
             return ResultGenerator.genFailResult("评论回复失败");
         }
     }
-    
-    // todo 批量删除评论
+
+    /**
+     * 批量评论删除
+     * @param ids 评论ids
+     * @return 返回操作结果
+     */
     @PostMapping("/comments/delete")
     @ResponseBody
     public Result delete(@RequestBody Integer[] ids) {
