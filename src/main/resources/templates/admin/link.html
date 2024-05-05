@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<header th:replace="admin/header::header-fragment"></header>
+<header th:replace="~{admin/header::header-fragment}"></header>
 <body class="hold-transition sidebar-mini">
 <style>
     .ui-jqgrid tr.jqgrow td {
@@ -12,9 +12,9 @@
 </style>
 <div class="wrapper">
     <!-- 引入页面头header-fragment -->
-    <div th:replace="admin/header::header-nav"></div>
+    <div th:replace="~{admin/header::header-nav}"></div>
     <!-- 引入工具栏sidebar-fragment -->
-    <div th:replace="admin/sidebar::sidebar-fragment(${path})"></div>
+    <div th:replace="~{admin/sidebar::sidebar-fragment(${path})}"></div>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -78,22 +78,22 @@
                                 <div class="form-group">
                                     <label for="linkName" class="control-label">网站名称:</label>
                                     <input type="text" class="form-control" id="linkName" name="linkName"
-                                           placeholder="请输入网站名称" required="true">
+                                           placeholder="请输入网站名称" required="required">
                                 </div>
                                 <div class="form-group">
                                     <label for="linkUrl" class="control-label">网站链接:</label>
                                     <input type="url" class="form-control" id="linkUrl" name="linkUrl"
-                                           placeholder="请输入网站链接" required="true">
+                                           placeholder="请输入网站链接" required="required">
                                 </div>
                                 <div class="form-group">
                                     <label for="linkDescription" class="control-label">网站描述:</label>
                                     <input type="url" class="form-control" id="linkDescription" name="linkDescription"
-                                           placeholder="请输入网站描述" required="true">
+                                           placeholder="请输入网站描述" required="required">
                                 </div>
                                 <div class="form-group">
                                     <label for="linkRank" class="control-label">排序值:</label>
                                     <input type="number" class="form-control" id="linkRank" name="linkRank"
-                                           placeholder="请输入排序值" required="true">
+                                           placeholder="请输入排序值" required="required">
                                 </div>
                             </form>
                         </div>
@@ -109,7 +109,7 @@
     </div>
     <!-- /.content-wrapper -->
     <!-- 引入页脚footer-fragment -->
-    <div th:replace="admin/footer::footer-fragment"></div>
+    <div th:replace="~{admin/footer::footer-fragment}"></div>
 </div>
 <!-- jQuery -->
 <script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
