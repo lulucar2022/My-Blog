@@ -29,7 +29,7 @@ public class CategoryController {
     /**
      * 分类页面访问
      * @param request http请求
-     * @return
+     * @return 跳转到分类页面
      */
     @GetMapping("/categories")
     public String categoryPage(HttpServletRequest request) {
