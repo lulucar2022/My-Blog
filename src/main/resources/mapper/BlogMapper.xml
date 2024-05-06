@@ -236,7 +236,7 @@
             #{id}
         </foreach>
     </update>
-    <select id="selectByPrimaryKey" parameterType="Long" resultMap="ResultMapWithBLOBs">
+    <select id="selectByPrimaryKey"  resultMap="ResultMapWithBLOBs">
         select
         <include refid="Base_Column_List"/>
         ,
@@ -244,7 +244,7 @@
         from tb_blog
         where blog_id = #{blogId,jdbcType=BIGINT} and is_deleted = 0
     </select>
-    <select id="findBlogList" parameterType="Map" resultMap="BaseResultMap">
+    <select id="findBlogList" parameterType="map" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from tb_blog
@@ -271,16 +271,16 @@
         <!-- 使用<choose>来模拟else if逻辑 -->
         <choose>
             <when test="type!=null and type==0">
-                order by blog_views desc,
+                order by blog_views desc 
             </when>
             <when test="type!=null and type==1">
-                order by blog_id desc,
+                order by blog_id desc 
             </when>
             <!-- 可以添加<otherwise>来处理其他情况，如果不需要则省略 -->
         </choose>
         limit #{limit}
     </select>
-    <select id="getTotalBlogs" parameterType="Map" resultType="int">
+    <select id="getTotalBlogs" parameterType="map" resultType="int">
         select count(*) from tb_blog
         where is_deleted=0
         <if test="keyword!=null">
@@ -293,7 +293,7 @@
             AND blog_category_id = #{blogCategoryId}
         </if>
     </select>
-    <select id="getBlogsPageByTagId" parameterType="Map" resultMap="BaseResultMap">
+    <select id="getBlogsPageByTagId" parameterType="map" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from tb_blog
@@ -304,7 +304,7 @@
             limit #{start},#{limit}
         </if>
     </select>
-    <select id="getTotalBlogsByTagId" parameterType="Map" resultType="int">
+    <select id="getTotalBlogsByTagId" parameterType="map" resultType="int">
         select count(*)
         from tb_blog
         where  blog_id IN (SELECT blog_id FROM tb_blog_tag_relation WHERE tag_id = #{tagId})
