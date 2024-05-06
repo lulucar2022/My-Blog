@@ -23,12 +23,24 @@ spring:
       
   thymeleaf:
     cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    servlet:
+      content-type: text/html
+    encoding: UTF-8
+    mode: HTML
+  
+  mvc:
+    static-path-pattern: /**
     
   servlet:
     # 文件上传大小限制
     multipart:
       max-file-size: 3MB
       max-request-size: 10MB
+  web:
+    resources:
+      static-locations: classpath:/static/
 
 # 整合 mybatis 配置
 mybatis:
