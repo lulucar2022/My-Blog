@@ -1,30 +1,26 @@
 package cn.lulucar.blog;
 
-import cn.hutool.captcha.CaptchaUtil;
-import cn.hutool.captcha.ShearCaptcha;
-import cn.lulucar.blog.service.impl.AdminUserServiceImpl;
-import cn.lulucar.blog.util.PasswordEncodeUtil;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+
+import cn.lulucar.blog.entity.Blog;
+import cn.lulucar.blog.mapper.BlogMapper;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
+
+import java.util.List;
 
 @SpringBootTest
 class BlogApplicationTests {
     @Autowired
-    BCryptPasswordEncoder passwordEncoder;
-    @Autowired
-    AdminUserServiceImpl adminUserService;
-    @Test
-    
-    void contextLoads() {
-        String userName = "root";
-        String password = "123456";
-        String nickName = "lulucar";
-        Boolean b = adminUserService.signUp(userName,nickName ,passwordEncoder.encode(password));
-        Assertions.assertTrue(b);
+    BlogMapper blogMapper;
+    @ParameterizedTest
+    @ValueSource(ints = {0,1})
+    void getBlogListForIndexPage(int type) {
+        List<Blog> blogListByType = blogMapper.findBlogListByType(type, 9);
+        for (Blog blog : blogListByType) {
+            System.out.println(blog);
+        }
     }
-
 }
