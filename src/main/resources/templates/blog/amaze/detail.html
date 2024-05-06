@@ -29,16 +29,16 @@
 
 </head>
 <body>
-<div th:replace="blog/amaze/header::nav-fragment"></div>
+<div th:replace="~{blog/amaze/header::nav-fragment}"></div>
 <header th:fragment="header-fragment" class="intro-header"
-        th:style="'background-image:url(' + @{/blog/amaze/images/header.jpg} + ');'">
+        th:style="|background-image: url(${'/blog/amaze/images/header.jpg'})|">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="post-heading">
                     <h1 th:text="${blogDetailVO.blogTitle}"></h1>
                     <span class="meta">
-                        <th:block th:text="${#dates.format(blogDetailVO.createTime, 'yyyy-MM-dd')}"></th:block> &nbsp;
+                        <th:block th:text="${#temporals.format(blogDetailVO.createTime, 'yyyy-MM-dd')}"></th:block> &nbsp;
                             <div class="comments-view" style="display: inline-block">
                                 <a href="#comments" class="article-comments"><th:block
                                         th:text="${blogDetailVO.commentCount}"></th:block>条评论</a> &nbsp;
@@ -55,6 +55,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </header>
 <div class="container">
     <div class="am-g am-g-fixed blog-fixed">
@@ -80,7 +81,7 @@
                             <h3 th:text="${comment.commentator}"></h3>
                             <span class="date">
                                        评论时间：<th:block
-                                    th:text="${#dates.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
+                                    th:text="${#temporals.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
                                     </span>
                         </div>
                     </header>
@@ -97,7 +98,7 @@
                                 <h3 th:text="${configurations.get('yourName')}">十三</h3>
                                 <span class="date">
                                         回复时间： <th:block
-                                        th:text="${#dates.format(comment.replyCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
+                                        th:text="${#temporals.format(comment.replyCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
                                     </span>
 
                             </div>
@@ -111,30 +112,32 @@
         </th:block>
         <th:block th:if="${null != commentPageResult}">
             <ul class="am-pagination">
-                <li th:class="${commentPageResult.currPage==1}?'disabled' : ''"><a
-                        th:href="@{${commentPageResult.currPage==1}?'##':'/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage-1}+'#comments'}">&laquo;</a>
+                <li th:class="${commentPageResult.currPage==1}?'disabled' : ''">
+                    <a th:href="${commentPageResult.currPage == 1} ? '#' : @{/blog/{blogId}/comments(blogId=${blogDetailVO.blogId},commentPage=${commentPageResult.currPage-1})}">&laquo;</a>
                 </li>
-                <li th:if="${commentPageResult.currPage-3 >=1}"><a
-                        th:href="@{'/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage-3}+'#comments'}"
+                <li th:if="${commentPageResult.currPage -3 >=1}"><a
+                        th:href="@{'/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage -3}+'#comments'}"
                         th:text="${commentPageResult.currPage -3}">1</a></li>
-                <li th:if="${commentPageResult.currPage-2 >=1}"><a
-                        th:href="@{'/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage-2}+'#comments'}"
+                <li th:if="${commentPageResult.currPage -2 >=1}"><a
+                        th:href="@{'/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage -2}+'#comments'}"
                         th:text="${commentPageResult.currPage -2}">1</a></li>
-                <li th:if="${commentPageResult.currPage-1 >=1}"><a
-                        th:href="@{'/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage-1}+'#comments'}"
+                <li th:if="${commentPageResult.currPage -1 >=1}"><a
+                        th:href="@{'/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage -1}+'#comments'}"
                         th:text="${commentPageResult.currPage -1}">1</a></li>
                 <li class="active"><a href="#" th:text="${commentPageResult.currPage}">1</a></li>
-                <li th:if="${commentPageResult.currPage+1 <=commentPageResult.totalPage}"><a
+                <li th:if="${commentPageResult.currPage +1 <=commentPageResult.totalPage}"><a
                         th:href="@{'/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage+1}+'#comments'}"
                         th:text="${commentPageResult.currPage +1}">1</a></li>
-                <li th:if="${commentPageResult.currPage+2 <=commentPageResult.totalPage}"><a
+                <li th:if="${commentPageResult.currPage +2 <=commentPageResult.totalPage}"><a
                         th:href="@{'/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage+2}+'#comments'}"
                         th:text="${commentPageResult.currPage +2}">1</a></li>
-                <li th:if="${commentPageResult.currPage+3 <=commentPageResult.totalPage}"><a
+                <li th:if="${commentPageResult.currPage +3 <=commentPageResult.totalPage}"><a
                         th:href="@{'/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage+3}+'#comments'}"
                         th:text="${commentPageResult.currPage +3}">1</a></li>
-                <li th:class="${commentPageResult.currPage==commentPageResult.totalPage}?'disabled' : ''"><a
-                        th:href="@{${commentPageResult.currPage==commentPageResult.totalPage}?'##' : '/blog/'+${blogDetailVO.blogId}+'?commentPage=' + ${commentPageResult.currPage+1}+'#comments'}">&raquo;</a>
+                <li th:class="${commentPageResult.currPage==commentPageResult.totalPage}?'disabled' : ''">
+                    <a th:href="${commentPageResult.currPage==commentPageResult.totalPage} ? '#' : (@{/blog/{blogId}(blogId=${blogDetailVO.blogId},commentPage=${commentPageResult.currPage+1})} + '#comments')">
+                        &raquo;
+                    </a>
                 </li>
             </ul>
         </th:block>
