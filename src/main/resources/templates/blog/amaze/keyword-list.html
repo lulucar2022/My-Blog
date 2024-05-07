@@ -27,7 +27,7 @@
                                     </div>
                                 </div>
                                 <span class="pull-right time pc_time"
-                                      th:text="${#dates.format(blog.createTime, 'yyyy-MM-dd')}">2019-01</span>
+                                      th:text="${#temporals.format(blog.createTime, 'yyyy-MM-dd')}">2019-01</span>
                             </div>
                             <h1 class="post-index-title"><a itemtype="url" th:href="@{'/blog/' + ${blog.blogId}}">
                                 <th:block th:text="${blog.blogTitle}"></th:block>
@@ -48,13 +48,13 @@
                     <li th:class="${blogPageResult.currPage==1}?'disabled' : 'am-pagination-prev'"><a
                             th:href="@{${blogPageResult.currPage==1}?'##':'/'+${pageUrl}+'/'+${keyword}+'/' + ${blogPageResult.currPage-1}}">&laquo;</a>
                     </li>
-                    <li th:if="${blogPageResult.currPage-3 >=1}"><a
+                    <li th:if="${blogPageResult.currPage -3 >=1}"><a
                             th:href="@{'/'+${pageUrl}+'/'+${keyword}+'/' + ${blogPageResult.currPage-3}}"
                             th:text="${blogPageResult.currPage -3}">1</a></li>
-                    <li th:if="${blogPageResult.currPage-2 >=1}"><a
+                    <li th:if="${blogPageResult.currPage -2 >=1}"><a
                             th:href="@{'/'+${pageUrl}+'/'+${keyword}+'/' + ${blogPageResult.currPage-2}}"
                             th:text="${blogPageResult.currPage -2}">1</a></li>
-                    <li th:if="${blogPageResult.currPage-1 >=1}"><a
+                    <li th:if="${blogPageResult.currPage -1 >=1}"><a
                             th:href="@{'/'+${pageUrl}+'/'+${keyword}+'/' + ${blogPageResult.currPage-1}}"
                             th:text="${blogPageResult.currPage -1}">1</a></li>
                     <li class="active"><a href="#" th:text="${blogPageResult.currPage}">1</a></li>

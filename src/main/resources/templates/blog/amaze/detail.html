@@ -80,9 +80,9 @@
                         <div class="meta">
                             <h3 th:text="${comment.commentator}"></h3>
                             <span class="date">
-                                       评论时间：<th:block
+                                       <th:block
                                     th:text="${#temporals.format(comment.commentCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
-                                    </span>
+                            </span>
                         </div>
                     </header>
                     <div class="body">
@@ -95,15 +95,14 @@
                             <img th:src="@{${configurations.get('yourAvatar')}}"
                                  style="float: left;border-radius: 100px;width: 50px;">
                             <div class="meta2">
-                                <h3 th:text="${configurations.get('yourName')}">十三</h3>
-                                <span class="date">
-                                        回复时间： <th:block
+                                <h3 th:text="${configurations.get('yourName')}"></h3>
+                                <span class="date" style="font-size: 14px">
+                                        <th:block
                                         th:text="${#temporals.format(comment.replyCreateTime, 'yyyy-MM-dd HH:mm:ss')}"></th:block>
-                                    </span>
-
+                                </span>
                             </div>
                         </header>
-                        <div class="reply-body">
+                        <div class="rely-body">
                             <th:block th:text="${comment.replyBody}"></th:block>
                         </div>
                     </article>
@@ -169,17 +168,17 @@
                         <input style="width:50%" type="text" name="verifyCode" id="verifyCode"
                                placeholder="(*必填)请输入验证码">&nbsp;&nbsp;
                         <img alt="单击图片刷新！" class="pointer" style="margin-top: 15px; border-radius: 25px;"
-                             th:src="@{/common/kaptcha}"
-                             onclick="this.src='/common/kaptcha?d='+new Date()*1">
+                             th:src="@{/common/getCode}"
+                             onclick="this.src='/common/getCode?d='+new Date()*1">
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <textarea rows="5" name="commentBody" id="commentBody" placeholder="(*必填)请输入你的评论"></textarea>
+                        <textarea rows="5" name="commentBody" id="commentBody" placeholder="(*必填) 200字以内"></textarea>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2" align="center">
+                    <td colspan="2">
                         <button id="commentSubmit" type="submit"
                                 class="submit am-btn am-btn-primary">提交
                         </button>
@@ -191,7 +190,7 @@
     </th:block>
     <p class="back-top" id="back-top" style="display:none"><a href="#top"><span></span></a></p>
 </div>
-<footer th:replace="blog/amaze/footer::footer-fragment"></footer>
+<footer th:replace="~{blog/amaze/footer::footer-fragment}"></footer>
 </body>
 <script th:src="@{/blog/default/js/jquery.min.js}"></script>
 <script th:src="@{/blog/plugins/highlight/highlight.pack.js}"></script>
