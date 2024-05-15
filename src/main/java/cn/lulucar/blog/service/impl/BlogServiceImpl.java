@@ -33,17 +33,20 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class BlogServiceImpl implements BlogService {
-    @Autowired
-    private BlogMapper blogMapper;
-    @Autowired
-    private BlogCategoryMapper categoryMapper;
-    @Autowired
-    private BlogTagMapper tagMapper;
-    @Autowired
-    private BlogTagRelationMapper blogTagRelationMapper;
-    @Autowired
-    private BlogCommentMapper blogCommentMapper;
-    
+    private final BlogMapper blogMapper;
+    private final BlogCategoryMapper categoryMapper;
+    private final BlogTagMapper tagMapper;
+    private final BlogTagRelationMapper blogTagRelationMapper;
+    private final BlogCommentMapper blogCommentMapper;
+
+    public BlogServiceImpl(BlogMapper blogMapper, BlogCategoryMapper categoryMapper, BlogTagMapper tagMapper, BlogTagRelationMapper blogTagRelationMapper, BlogCommentMapper blogCommentMapper) {
+        this.blogMapper = blogMapper;
+        this.categoryMapper = categoryMapper;
+        this.tagMapper = tagMapper;
+        this.blogTagRelationMapper = blogTagRelationMapper;
+        this.blogCommentMapper = blogCommentMapper;
+    }
+
     /**
      * 保存博客
      * @param blog Blog类型 博客
@@ -392,8 +395,9 @@ public class BlogServiceImpl implements BlogService {
     }
 
     /**
-     * 方法抽取
-     *
+     * 方法抽取 
+     * 详细版博客文章
+     * 
      * @param blog
      * @return
      */
@@ -429,20 +433,37 @@ public class BlogServiceImpl implements BlogService {
         return null;
     }
 
+    /**
+     * 用于首页浏览的博客文章
+     * @param blogList
+     * @return
+     */
     private List<BlogListVO> getBlogListVOsByBlogs(List<Blog> blogList) {
         List<BlogListVO> blogListVOS = new ArrayList<>();
+        // 判断集合是否为空
         if (!CollectionUtils.isEmpty(blogList)) {
+            // 获取所有博客文章的分类id
             List<Integer> categoryIds = blogList.stream().map(Blog::getBlogCategoryId).collect(Collectors.toList());
+            // 博客分类Map集合
             Map<Integer, String> blogCategoryMap = new HashMap<>();
+            // 博客文章的分类id存在
             if (!CollectionUtils.isEmpty(categoryIds)) {
+                // 获取博客分类的数据
                 List<BlogCategory> blogCategories = categoryMapper.selectByCategoryIds(categoryIds);
+                // 博客分类数据存在
                 if (!CollectionUtils.isEmpty(blogCategories)) {
                     blogCategoryMap = blogCategories.stream().collect(Collectors.toMap(BlogCategory::getCategoryId, BlogCategory::getCategoryIcon, (key1, key2) -> key2));
                 }
             }
             for (Blog blog : blogList) {
+                log.info(blog.toString());
                 BlogListVO blogListVO = new BlogListVO();
+                // 为博客文章截取摘要
+                String summaryContent = MarkDownUtil.mdToHtmlForSummary(blog.getBlogContent());
+                blog.setBlogContent(summaryContent);
+                // 复制属性
                 BeanUtils.copyProperties(blog, blogListVO);
+                // 根据博客分类id 进行 分类， 如果博客文章没有匹配到就归为默认分类
                 if (blogCategoryMap.containsKey(blog.getBlogCategoryId())) {
                     blogListVO.setBlogCategoryIcon(blogCategoryMap.get(blog.getBlogCategoryId()));
                 } else {

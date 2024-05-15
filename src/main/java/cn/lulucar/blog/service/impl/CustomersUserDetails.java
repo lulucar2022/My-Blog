@@ -22,8 +22,12 @@ import java.util.Collections;
 @Service
 public class CustomersUserDetails implements UserDetailsService {
     
-    @Autowired
-    private AdminUserMapper adminUserMapper;
+    private final AdminUserMapper adminUserMapper;
+
+    public CustomersUserDetails(AdminUserMapper adminUserMapper) {
+        this.adminUserMapper = adminUserMapper;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // 根据用户名查询用户信息

@@ -19,10 +19,14 @@ import java.util.List;
  */
 @Service
 public class CategoryServiceImpl implements CategoryService {
-    @Autowired
-    BlogMapper blogMapper;
-    @Autowired
-    BlogCategoryMapper blogCategoryMapper;
+    private final BlogMapper blogMapper;
+    private final BlogCategoryMapper blogCategoryMapper;
+
+    public CategoryServiceImpl(BlogMapper blogMapper, BlogCategoryMapper blogCategoryMapper) {
+        this.blogMapper = blogMapper;
+        this.blogCategoryMapper = blogCategoryMapper;
+    }
+
     /**
      * 查询分类的分页数据
      * 分页需要记录总数，当前页码，总页数

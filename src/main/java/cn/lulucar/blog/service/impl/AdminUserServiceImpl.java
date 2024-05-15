@@ -18,10 +18,14 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class AdminUserServiceImpl implements AdminUserService {
-    @Resource
-    private AdminUserMapper adminUserMapper;
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private final AdminUserMapper adminUserMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    public AdminUserServiceImpl(AdminUserMapper adminUserMapper, BCryptPasswordEncoder passwordEncoder) {
+        this.adminUserMapper = adminUserMapper;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     /**
      * 用户登录
      * 使用 SpringBoot-security框架提供的Bcrypt加密功能加密用户密码

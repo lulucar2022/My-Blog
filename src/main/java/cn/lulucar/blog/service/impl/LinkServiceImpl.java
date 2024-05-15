@@ -20,8 +20,11 @@ import java.util.stream.Collectors;
  */
 @Service
 public class LinkServiceImpl implements LinkService {
-    @Autowired
-    BlogLinkMapper blogLinkMapper;
+    private final BlogLinkMapper blogLinkMapper;
+
+    public LinkServiceImpl(BlogLinkMapper blogLinkMapper) {
+        this.blogLinkMapper = blogLinkMapper;
+    }
 
     /**
      * 查询友链的分页数据

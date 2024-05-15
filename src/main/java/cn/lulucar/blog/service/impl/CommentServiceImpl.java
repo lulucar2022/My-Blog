@@ -5,7 +5,8 @@ import cn.lulucar.blog.mapper.BlogCommentMapper;
 import cn.lulucar.blog.service.CommentService;
 import cn.lulucar.blog.util.PageQueryUtil;
 import cn.lulucar.blog.util.PageResult;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -13,7 +14,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author wenxiaolan
@@ -21,9 +21,17 @@ import java.util.Objects;
  * @date 2024/4/22 16:11
  */
 @Service
+@Slf4j
 public class CommentServiceImpl implements CommentService {
-    @Autowired
-    BlogCommentMapper blogCommentMapper;
+   
+    private final BlogCommentMapper blogCommentMapper;
+
+    public CommentServiceImpl(BlogCommentMapper blogCommentMapper) {
+        this.blogCommentMapper = blogCommentMapper;
+    }
+
+   
+    
     /**
      * 添加评论
      *
@@ -125,4 +133,6 @@ public class CommentServiceImpl implements CommentService {
         }
         return null;
     }
+
+    
 }

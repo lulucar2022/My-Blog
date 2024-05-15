@@ -22,10 +22,16 @@ import java.util.List;
 @Service
 public class TagServiceImpl implements TagService {
 
-    @Autowired
+    private final
     BlogTagMapper blogTagMapper;
-    @Autowired
+    private final
     BlogTagRelationMapper blogTagRelationMapper;
+
+    public TagServiceImpl(BlogTagMapper blogTagMapper, BlogTagRelationMapper blogTagRelationMapper) {
+        this.blogTagMapper = blogTagMapper;
+        this.blogTagRelationMapper = blogTagRelationMapper;
+    }
+
     /**
      * 查询标签的分页数据
      *
