@@ -27,6 +27,8 @@ public class BlogListVO implements Serializable {
 
     private String blogCategoryName;
 
+    private String blogContent;
+
     // 使用自定义的序列化器和反序列化器来处理LocalDateTime
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

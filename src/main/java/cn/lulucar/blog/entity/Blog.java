@@ -32,6 +32,7 @@ public class Blog {
     private Byte enableComment;
 
     private Byte isDeleted;
+    private String blogContent;
 
     // 使用自定义的序列化器和反序列化器来处理LocalDateTime
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -42,7 +43,7 @@ public class Blog {
 
     private LocalDateTime updateTime;
 
-    private String blogContent;
+    
 
 
 

@@ -36,6 +36,16 @@
                                     <th:block th:text="${blog.blogTitle}"></th:block>  
                                 </a>
                             </h1>
+<!--                            文章摘要-->
+                            <div>
+                                <a th:href="@{'/blog/' + ${blog.blogId}}">
+                                    <p th:text="${blog.blogContent}">
+                                        
+                                    </p>
+                                    <span style="color: cornflowerblue">点击查看全部</span>
+                                </a>
+                                
+                            </div>
 <!--                            <div class="post-content-preview article-body">-->
 <!--                                <a th:href="@{'/blog/' + ${blog.blogId}}">-->
 <!--                                    <img th:src="@{${blog.blogCoverImage}}" alt=""></a>-->
@@ -51,14 +61,14 @@
                     <li th:class="${blogPageResult.currPage==1}?'disabled' : 'am-pagination-prev'"><a
                             th:href="@{${blogPageResult.currPage==1}?'##':'/page/' + ${blogPageResult.currPage-1}}">&laquo;</a>
                     </li>
-                    <li th:if="${blogPageResult.currPage-3 >=1}"><a
-                            th:href="@{'/page/' + ${blogPageResult.currPage-3}}"
+                    <li th:if="${blogPageResult.currPage -3 >=1}"><a
+                            th:href="@{'/page/' + ${blogPageResult.currPage -3}}"
                             th:text="${blogPageResult.currPage -3}">1</a></li>
-                    <li th:if="${blogPageResult.currPage-2 >=1}"><a
-                            th:href="@{'/page/' + ${blogPageResult.currPage-2}}"
+                    <li th:if="${blogPageResult.currPage -2 >=1}"><a
+                            th:href="@{'/page/' + ${blogPageResult.currPage -2}}"
                             th:text="${blogPageResult.currPage -2}">1</a></li>
-                    <li th:if="${blogPageResult.currPage-1 >=1}"><a
-                            th:href="@{'/page/' + ${blogPageResult.currPage-1}}"
+                    <li th:if="${blogPageResult.currPage -1 >=1}"><a
+                            th:href="@{'/page/' + ${blogPageResult.currPage -1}}"
                             th:text="${blogPageResult.currPage -1}">1</a></li>
                     <li class="active"><a href="#" th:text="${blogPageResult.currPage}">1</a></li>
                     <li th:if="${blogPageResult.currPage+1 <=blogPageResult.totalPage}"><a
