@@ -1,8 +1,6 @@
 package cn.lulucar.blog.config;
 
-import cn.lulucar.blog.entity.AdminUser;
 import cn.lulucar.blog.mapper.AdminUserMapper;
-import cn.lulucar.blog.util.PasswordEncodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

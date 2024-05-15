@@ -28,7 +28,7 @@
                                     </div>
                                 </div>
                                 <span class="pull-right time pc_time"
-                                      th:text="${#temporals.format(blog.createTime, 'yyyy-MM-dd')}">2019-01
+                                      th:text="${#temporals.format(blog.createTime, 'yyyy-MM-dd')}">
                                 </span>
                             </div>
                             <h1 class="post-index-title">
@@ -41,8 +41,9 @@
 <!--                                    <img th:src="@{${blog.blogCoverImage}}" alt=""></a>-->
 <!--                            </div>-->
                             <div class="clearfix topic-footer">
-                                <span class="pull-left time mobile_time">2018-01</span>
+                                <span class="pull-left time mobile_time"></span>
                             </div>
+                        </div>
                     </article>
                 </th:block>
             </th:block>

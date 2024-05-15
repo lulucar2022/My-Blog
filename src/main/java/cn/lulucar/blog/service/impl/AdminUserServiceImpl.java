@@ -3,10 +3,7 @@ package cn.lulucar.blog.service.impl;
 import cn.lulucar.blog.entity.AdminUser;
 import cn.lulucar.blog.mapper.AdminUserMapper;
 import cn.lulucar.blog.service.AdminUserService;
-import cn.lulucar.blog.util.PasswordEncodeUtil;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
