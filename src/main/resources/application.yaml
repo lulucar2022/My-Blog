@@ -41,6 +41,10 @@ spring:
   web:
     resources:
       static-locations: classpath:/static/
+  # 日志输出着色
+  output:
+    ansi:
+      enabled: detect
 
 # 整合 mybatis 配置
 mybatis:
@@ -58,13 +62,12 @@ server:
 logging:
   group:
     group1:
-      - cn.lulucar.blog.controller
-      - cn.lulucar.blog.service
+#      - cn.lulucar.blog.controller
+#      - cn.lulucar.blog.service
       - cn.lulucar.blog.mapper
   level:
     group1: debug
-    
-    
+  
 # 定义文件上传目录  
 file: 
   upload: 

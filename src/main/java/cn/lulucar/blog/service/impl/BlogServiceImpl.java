@@ -456,7 +456,6 @@ public class BlogServiceImpl implements BlogService {
                 }
             }
             for (Blog blog : blogList) {
-                log.info(blog.toString());
                 BlogListVO blogListVO = new BlogListVO();
                 // 为博客文章截取摘要
                 String summaryContent = MarkDownUtil.mdToHtmlForSummary(blog.getBlogContent());

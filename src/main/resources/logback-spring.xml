@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 配置文件修改时重新加载，默认true -->
+<configuration scan="true">
+    <!-- 引入spirng boot默认的logback配置文件 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <property name="LOG_DIR" value="logs"/>
+
+    <!-- 控制台输出 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder charset="UTF-8">
+            <!-- 输出日志记录格式 -->
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- 第二个文件输出,每天产生一个文件 -->
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+<!--        <file>${LOG_DIR}/info.log</file>-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/info.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <encoder charset="UTF-8">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <!--日志文件最大的大小-->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>100MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    
+
+    <!-- 设置日志输出级别 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE_INFO" />
+        
+    </root>
+<!--    这个file1代表的是包名，这个项目没有file1包名-->
+<!--    <logger name="file1" level="INFO">-->
+<!--    </logger>-->
+</configuration>
