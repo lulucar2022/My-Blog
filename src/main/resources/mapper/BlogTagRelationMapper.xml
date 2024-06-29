@@ -97,7 +97,7 @@
         FROM tb_blog_tag_relation
         WHERE blog_id = #{blogId,jdbcType=BIGINT} AND tag_id = #{tagId,jdbcType=INTEGER}
     </select>
-    <select id="selectDistinctTagIds" resultType="java.lang.Long">
+    <select id="selectDistinctTagIds" resultType="java.lang.Integer">
         SELECT DISTINCT(tag_id)
         FROM tb_blog_tag_relation
         WHERE tag_id IN
@@ -105,4 +105,14 @@
             #{tagId}
         </foreach>
     </select>
+    <select id="selectByTagId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM tb_blog_tag_relation
+        WHERE tag_id = #{tagId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByTagId" parameterType="java.lang.Integer">
+        DELETE FROM tb_blog_tag_relation
+        WHERE tag_id = #{tagId,jdbcType=BIGINT}
+    </delete>
 </mapper>

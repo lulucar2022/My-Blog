@@ -124,13 +124,14 @@ public class AdminUserServiceImpl implements AdminUserService {
      * 注册管理员账户
      * @param loginUserName 用户名
      * @param nickName 昵称
-     * @param encodedPassword 加密后的密码
+     * @param password 密码
      * @return
      */
     @Override
-    public Boolean signUp(String loginUserName, String nickName, String encodedPassword) {
+    public Boolean signUp(String loginUserName, String nickName, String password) {
         AdminUser adminUser = adminUserMapper.selectByUserName(loginUserName);
         if (adminUser == null) {
+            String encodedPassword = passwordEncoder.encode(password);
             adminUser = new AdminUser();
             adminUser.setLoginUserName(loginUserName);
             adminUser.setNickName(nickName);

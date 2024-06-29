@@ -7,6 +7,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -42,7 +43,7 @@ public class AdminController {
         log.info("进入 login 页面");
         return "admin/login";
     }
-
+    
     // 主页
     @GetMapping({"", "/", "/index", "/index.html"})
     public String index(HttpServletRequest request) {
@@ -94,7 +95,7 @@ public class AdminController {
             session.setAttribute("loginUser", adminUser.getNickName());
             session.setAttribute("loginUserId", adminUser.getAdminUserId());
             //session过期时间设置为7200秒 即两小时
-            //session.setMaxInactiveInterval(60 * 60 * 2);
+            session.setMaxInactiveInterval(60 * 60 * 2);
             // 成功则跳转的index页面
             
             log.info("登录成功");
@@ -218,5 +219,39 @@ public class AdminController {
         request.getSession().removeAttribute("errorMsg");
         return "admin/login";
     }
-    
+
+    // 注册页面
+    @GetMapping({"/register"})
+    public String register() {
+        log.info("进入 register 页面");
+        return "admin/register";
+    }
+    @PostMapping("register")
+    public String register(@RequestParam("username") String username,
+                           @RequestParam("password") String password,
+                           @RequestParam("nickName") String nickName,
+                           @RequestParam("confirmPassword") String confirmPassword) {
+        if (password.isEmpty()
+                || username.isEmpty()
+                || nickName.isEmpty()
+                || confirmPassword.isEmpty()) {
+            log.error("注册信息不能为空");
+            return "admin/register";
+            
+        }
+        
+        if (password == null 
+                || username == null 
+                || nickName == null 
+                || confirmPassword == null) {
+            log.error("注册信息不能为空");
+            return "admin/register";
+        }
+        if (! password.equals(confirmPassword)) {
+            log.error("两次输入的密码不一致");
+            return "admin/register";
+        }
+        adminUserService.signUp(username,nickName,password);
+        return "admin/login";
+    }
 }

@@ -10,6 +10,7 @@ import cn.lulucar.blog.util.PageResult;
 import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -74,13 +75,11 @@ public class TagServiceImpl implements TagService {
      * @return 删除成功返回true
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean deleteBatch(Integer[] ids) {
-        // 找出有关联blog的 tag，这里的tag具有唯一性
-        List<Long> relationIds = blogTagRelationMapper.selectDistinctTagIds(ids);
-        if (!CollectionUtils.isEmpty(relationIds)){
-            return false;
+        for (Integer id : ids) {
+            blogTagRelationMapper.deleteByTagId(id);
         }
-
         return blogTagMapper.deleteBatch(ids) > 0;
     }
 
