@@ -25,4 +25,7 @@ ZHENFENG13/My-Blog
 标签管理
 ![image](https://github.com/lulucar2022/My-Blog/assets/101035386/2d651253-9c6f-4b6b-98a3-65c8fabae58b)
 
->>>>>>> b580ebbbc692a0dfd1bd44350388bd6f0fbbc5bf
+### 前台
+首页
+![image](https://github.com/lulucar2022/My-Blog/assets/101035386/6c409f0c-39ec-4616-b73d-7c1d52dffe75)
+
