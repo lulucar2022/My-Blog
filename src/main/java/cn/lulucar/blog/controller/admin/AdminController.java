@@ -220,38 +220,38 @@ public class AdminController {
         return "admin/login";
     }
 
-    // 注册页面
-    @GetMapping({"/register"})
-    public String register() {
-        log.info("进入 register 页面");
-        return "admin/register";
-    }
-    @PostMapping("register")
-    public String register(@RequestParam("username") String username,
-                           @RequestParam("password") String password,
-                           @RequestParam("nickName") String nickName,
-                           @RequestParam("confirmPassword") String confirmPassword) {
-        if (password.isEmpty()
-                || username.isEmpty()
-                || nickName.isEmpty()
-                || confirmPassword.isEmpty()) {
-            log.error("注册信息不能为空");
-            return "admin/register";
-            
-        }
-        
-        if (password == null 
-                || username == null 
-                || nickName == null 
-                || confirmPassword == null) {
-            log.error("注册信息不能为空");
-            return "admin/register";
-        }
-        if (! password.equals(confirmPassword)) {
-            log.error("两次输入的密码不一致");
-            return "admin/register";
-        }
-        adminUserService.signUp(username,nickName,password);
-        return "admin/login";
-    }
+    // // 注册页面
+    // @GetMapping({"/register"})
+    // public String register() {
+    //     log.info("进入 register 页面");
+    //     return "admin/register";
+    // }
+    // @PostMapping("register")
+    // public String register(@RequestParam("username") String username,
+    //                        @RequestParam("password") String password,
+    //                        @RequestParam("nickName") String nickName,
+    //                        @RequestParam("confirmPassword") String confirmPassword) {
+    //     if (password.isEmpty()
+    //             || username.isEmpty()
+    //             || nickName.isEmpty()
+    //             || confirmPassword.isEmpty()) {
+    //         log.error("注册信息不能为空");
+    //         return "admin/register";
+    //        
+    //     }
+    //    
+    //     if (password == null 
+    //             || username == null 
+    //             || nickName == null 
+    //             || confirmPassword == null) {
+    //         log.error("注册信息不能为空");
+    //         return "admin/register";
+    //     }
+    //     if (! password.equals(confirmPassword)) {
+    //         log.error("两次输入的密码不一致");
+    //         return "admin/register";
+    //     }
+    //     adminUserService.signUp(username,nickName,password);
+    //     return "admin/login";
+    // }
 }
