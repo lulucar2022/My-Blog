@@ -45,6 +45,11 @@ spring:
   output:
     ansi:
       enabled: detect
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password: 88888888
 
 # 整合 mybatis 配置
 mybatis:
@@ -71,4 +76,5 @@ logging:
 # 定义文件上传目录  
 file: 
   upload: 
+    # windows 平台
     dir: E:/upload/

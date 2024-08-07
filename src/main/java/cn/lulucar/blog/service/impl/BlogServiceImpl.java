@@ -33,18 +33,25 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class BlogServiceImpl implements BlogService {
+    private static final String BLOG_KEY_PREFIX = "blog:";
+    private static final String BLOG_ID_LIST_KEY = "blog:id:list";
+    
+    private static final long CACHE_TTL = 60 * 60; // 缓存过期时间，单位秒
     private final BlogMapper blogMapper;
     private final BlogCategoryMapper categoryMapper;
     private final BlogTagMapper tagMapper;
     private final BlogTagRelationMapper blogTagRelationMapper;
     private final BlogCommentMapper blogCommentMapper;
+    
+    private final RedisUtils redisUtils;
 
-    public BlogServiceImpl(BlogMapper blogMapper, BlogCategoryMapper categoryMapper, BlogTagMapper tagMapper, BlogTagRelationMapper blogTagRelationMapper, BlogCommentMapper blogCommentMapper) {
+    public BlogServiceImpl(BlogMapper blogMapper, BlogCategoryMapper categoryMapper, BlogTagMapper tagMapper, BlogTagRelationMapper blogTagRelationMapper, BlogCommentMapper blogCommentMapper, RedisUtils redisUtils) {
         this.blogMapper = blogMapper;
         this.categoryMapper = categoryMapper;
         this.tagMapper = tagMapper;
         this.blogTagRelationMapper = blogTagRelationMapper;
         this.blogCommentMapper = blogCommentMapper;
+        this.redisUtils = redisUtils;
     }
 
     /**
@@ -125,8 +132,32 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public PageResult getBlogsPage(PageQueryUtil pageUtil) {
-        List<Blog> blogList = blogMapper.findBlogList(pageUtil);
         int totalCount = blogMapper.getTotalBlogs(pageUtil);
+        List<Object> blogListFromRedis = null;
+        List<Blog> blogList = null;
+        try {
+            blogListFromRedis= redisUtils.lRange(BLOG_ID_LIST_KEY, 0, -1);
+            for (Object id : blogListFromRedis) {
+                Blog blog = (Blog) redisUtils.get(BLOG_KEY_PREFIX + id);
+                blogList.add(blog);
+            }
+        } catch (Exception e) {
+            log.error("从redis中获取blog列表失败:{}",e.getMessage());
+        }
+        // 从 redis 返回数据
+        if (blogList != null) {
+            return new PageResult(blogListFromRedis,totalCount, pageUtil.getLimit(), pageUtil.getPage());
+        }
+        // 从 数据库 返回数据
+        blogList = blogMapper.findBlogList(pageUtil);
+        if (blogList != null) {
+            try {
+                // 存入 redis
+                redisUtils.rPushAll(BLOG_ID_LIST_KEY,blogList);
+            } catch (Exception e) {
+                log.error("将blog列表存入 redis 时发生错误:{}",e.getMessage());
+            }
+        }
         return new PageResult(blogList,totalCount, pageUtil.getLimit(), pageUtil.getPage());
     }
 
@@ -157,7 +188,28 @@ public class BlogServiceImpl implements BlogService {
      */
     @Override
     public Blog getBlogById(Long blogId) {
-        return blogMapper.selectByPrimaryKey(blogId);
+        // 从redis 缓存中获取文章id
+        Blog blogJson = null;
+        try {
+            blogJson = (Blog) redisUtils.get(BLOG_KEY_PREFIX + blogId);
+        } catch (Exception e) {
+            log.error("从redis中获取blog失败:{}",e.getMessage());
+        }
+        // 如果存在则返回
+        if (blogJson != null) {
+            return blogJson;
+        }
+        // 如果不存在，再从数据库中获取
+        Blog blog = blogMapper.selectByPrimaryKey(blogId);
+        if (blog != null) {
+            try {
+                redisUtils.set(BLOG_KEY_PREFIX + blogId, blog, CACHE_TTL);
+            } catch (Exception e) {
+                log.error("将blog存入 redis 时发生错误:{}",e.getMessage());
+            }
+        }
+        // 返回blog
+        return blog;
     }
 
     /**
