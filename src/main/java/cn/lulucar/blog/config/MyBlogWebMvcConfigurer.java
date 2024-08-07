@@ -9,9 +9,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class MyBlogWebMvcConfigurer implements WebMvcConfigurer {
+    private final AdminLoginInterceptor adminLoginInterceptor;
 
-    @Autowired
-    private AdminLoginInterceptor adminLoginInterceptor;
+    public MyBlogWebMvcConfigurer(AdminLoginInterceptor adminLoginInterceptor) {
+        this.adminLoginInterceptor = adminLoginInterceptor;
+    }
 
     public void addInterceptors(InterceptorRegistry registry) {
         // 添加一个拦截器，拦截以/admin为前缀的url路径

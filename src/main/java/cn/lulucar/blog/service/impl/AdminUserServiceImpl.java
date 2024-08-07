@@ -45,7 +45,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     /**
      * 获取用户信息
      *
-     * @param loginUserId
+     * @param loginUserId  用户id
      * @return
      */
     @Override

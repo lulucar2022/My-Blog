@@ -3,6 +3,7 @@ package cn.lulucar.blog.mapper;
 import cn.lulucar.blog.entity.Blog;
 import cn.lulucar.blog.util.PageQueryUtil;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -42,5 +43,8 @@ public interface BlogMapper {
 
     int updateBlogCategorys(@Param("categoryName") String categoryName, @Param("categoryId") Integer categoryId, @Param("ids")Integer[] ids);
 
+    // 获取blog表的所有id
+    @Select("select blog_id from tb_blog where is_deleted = 0")
+    List<Integer> getAllBlogIds();
 
 }

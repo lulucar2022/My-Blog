@@ -24,8 +24,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 @EnableWebSecurity
 public class WebSecurityConfiguration {
-    @Autowired
-    AdminUserMapper adminUserMapper;
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
                                 
