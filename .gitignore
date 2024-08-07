@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+src/test/
 ### 日志 ###
 logs/
 ### STS ###
