@@ -3,10 +3,8 @@
 - SpringBoot3
 - Mybatis
 - Thymeleaf
-
-## 账号密码
-- 管理员：lulucar/123123
-
+## 项目上线地址
+lulucar.online
 ## 学习作者项目
 ZHENFENG13/My-Blog
 =======
