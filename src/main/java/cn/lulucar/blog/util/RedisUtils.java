@@ -66,7 +66,10 @@ public class RedisUtils {
     public Boolean setNx(String key, Object value) {
         return redisTemplate.opsForValue().setIfAbsent(key, value);
     }
-
+    // 设置缓存时间
+    public void expire(String key, long timeout, TimeUnit unit) {
+        redisTemplate.expire(key, timeout, unit);
+    }
     // 如果不存在，则设置，附带过期时间
     public Boolean tryLock(String lockKey, String requestId, long seconds) {
         return redisTemplate.opsForValue().setIfAbsent(lockKey, requestId, seconds, TimeUnit.SECONDS);
