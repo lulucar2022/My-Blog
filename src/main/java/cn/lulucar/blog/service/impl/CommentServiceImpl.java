@@ -5,15 +5,16 @@ import cn.lulucar.blog.mapper.BlogCommentMapper;
 import cn.lulucar.blog.service.CommentService;
 import cn.lulucar.blog.util.PageQueryUtil;
 import cn.lulucar.blog.util.PageResult;
+import cn.lulucar.blog.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author wenxiaolan
@@ -23,11 +24,15 @@ import java.util.Map;
 @Service
 @Slf4j
 public class CommentServiceImpl implements CommentService {
+    private static final String COMMENT_ID_LIST_KEY = "comment:id:list";
+    private static final String COMMENT_KEY_PREFIX = "comment:";
    
     private final BlogCommentMapper blogCommentMapper;
+    private final RedisUtils redisUtils;
 
-    public CommentServiceImpl(BlogCommentMapper blogCommentMapper) {
+    public CommentServiceImpl(BlogCommentMapper blogCommentMapper, RedisUtils redisUtils) {
         this.blogCommentMapper = blogCommentMapper;
+        this.redisUtils = redisUtils;
     }
 
    
@@ -51,11 +56,48 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public PageResult getCommentsPage(PageQueryUtil pageUtil) {
-        List<BlogComment> blogCommentList = blogCommentMapper.findBlogCommentList(pageUtil);
         int totalCount = blogCommentMapper.getTotalBlogComments(pageUtil);
+        // 先查询 redis
+        List<BlogComment> blogCommentList = null;
+        List<Object> commentIdsFromRedis = null;
+        try {
+            commentIdsFromRedis = redisUtils.lRange(COMMENT_ID_LIST_KEY,0,-1);
+            List<Integer> list = commentIdsFromRedis.stream().map(id -> (Integer)id).toList();
+            blogCommentList = list.stream().map(id -> {
+                return (BlogComment) redisUtils.get(COMMENT_KEY_PREFIX + id);
+            }).collect(Collectors.toList());
+            
+        } catch (Exception e) {
+            log.error("从redis中获取comment列表失败：{}",e.getMessage());
+        }
+        // 从 redis 返回数据
+        if(blogCommentList != null) {
+            return new PageResult(blogCommentList,totalCount, pageUtil.getLimit(), pageUtil.getPage());
+        }
+        // 从 数据库 返回数据
+        blogCommentList = blogCommentMapper.findBlogCommentList(pageUtil);
+        if (blogCommentList != null) {
+            try {
+                // 把comment存入 redis
+                blogCommentList.forEach(comment -> {
+                    if (!redisUtils.hasKey(COMMENT_KEY_PREFIX + comment.getCommentId())) {
+                        redisUtils.set(COMMENT_KEY_PREFIX + comment.getCommentId(), comment);   
+                    }
+                });
+            } catch (Exception e) {
+                log.error("存入redis失败：{}",e.getMessage());
+            }
+        } else {
+            redisUtils.rPushAll(COMMENT_ID_LIST_KEY, new ArrayList<>(), 2, TimeUnit.MINUTES);
+            log.error("数据不存在该数据");
+        }
         return new PageResult(blogCommentList,totalCount, pageUtil.getLimit(), pageUtil.getPage());
     }
 
+    /**
+     * 获取评论总数
+     * @return 评论总数
+     */
     @Override
     public int getTotalComments() {
         return blogCommentMapper.getTotalBlogComments(null);
@@ -64,7 +106,7 @@ public class CommentServiceImpl implements CommentService {
     /**
      * 批量审核
      * 更新comment通过的status
-     * @param ids
+     * @param ids 评论id列表
      * @return
      */
     @Override
@@ -75,7 +117,7 @@ public class CommentServiceImpl implements CommentService {
     /**
      * 批量删除
      *
-     * @param ids
+     * @param ids 评论id列表
      * @return
      */
     @Override
