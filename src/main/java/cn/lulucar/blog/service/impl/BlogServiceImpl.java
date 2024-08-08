@@ -18,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -128,11 +129,12 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public PageResult getBlogsPage(PageQueryUtil pageUtil) {
         int totalCount = blogMapper.getTotalBlogs(pageUtil);
-        List<Object> blogListFromRedis = null;
+        List<Object> blogIdsFromRedis = null;
         List<Blog> blogList = null;
         try {
-            blogListFromRedis= redisUtils.lRange(BLOG_ID_LIST_KEY, 0, -1);
-            for (Object id : blogListFromRedis) {
+            // 先从redis查询blog的ID列表
+            blogIdsFromRedis= redisUtils.lRange(BLOG_ID_LIST_KEY, 0, -1);
+            for (Object id : blogIdsFromRedis) {
                 Blog blog = (Blog) redisUtils.get(BLOG_KEY_PREFIX + id);
                 blogList.add(blog);
             }
@@ -141,17 +143,24 @@ public class BlogServiceImpl implements BlogService {
         }
         // 从 redis 返回数据
         if (blogList != null) {
-            return new PageResult(blogListFromRedis,totalCount, pageUtil.getLimit(), pageUtil.getPage());
+            return new PageResult(blogList,totalCount, pageUtil.getLimit(), pageUtil.getPage());
         }
         // 从 数据库 返回数据
         blogList = blogMapper.findBlogList(pageUtil);
         if (blogList != null) {
             try {
-                // 存入 redis
-                redisUtils.rPushAll(BLOG_ID_LIST_KEY,blogList);
+                // 把blog对象存入 redis
+                blogList.forEach(blog -> {
+                    if (!redisUtils.hasKey(BLOG_KEY_PREFIX+blog.getBlogId())){
+                        redisUtils.set(BLOG_KEY_PREFIX + blog.getBlogId(), blog);
+                    }
+                });
             } catch (Exception e) {
                 log.error("将blog列表存入 redis 时发生错误:{}",e.getMessage());
             }
+        } else {
+            redisUtils.rPushAll(BLOG_ID_LIST_KEY,new ArrayList<>(),2, TimeUnit.MINUTES);
+            log.error("数据库不存在该数据");
         }
         return new PageResult(blogList,totalCount, pageUtil.getLimit(), pageUtil.getPage());
     }
