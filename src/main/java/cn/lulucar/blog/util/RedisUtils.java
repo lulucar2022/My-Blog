@@ -83,6 +83,10 @@ public class RedisUtils {
     public void rPushAll(String key, List<?> values) {
         values.forEach(value -> redisTemplate.opsForList().rightPush(key, value));
     }
+    public void rPushAll(String key, List<?> values, long timeout, TimeUnit unit) {
+        values.forEach(value -> redisTemplate.opsForList().rightPush(key, value));
+        expire(key,timeout,unit);
+    }
     // list 取出
     public List<Object> lRange(String key, long start, long end) {
         return redisTemplate.opsForList().range(key, start, end);
