@@ -72,3 +72,14 @@ logging:
 file: 
   upload: 
     dir: E:/upload/
+    
+# minio 配置
+minio:
+  # 访问地址
+  endpoint: http://127.0.0.1:9001
+  # 密钥
+  accessKey: XV5jiCoY8Tk0bJsRYCgG
+  secretKey: teqIoAZbNJ1FxAH6GX5nuC9hVQrlBO2JhHMnPGud
+  # 存储桶名称
+  bucketName: blog-test
+  
