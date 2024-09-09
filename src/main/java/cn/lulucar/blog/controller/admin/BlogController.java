@@ -1,6 +1,5 @@
 package cn.lulucar.blog.controller.admin;
 
-import cn.hutool.core.util.ObjectUtil;
 import cn.lulucar.blog.config.Constants;
 import cn.lulucar.blog.entity.Blog;
 import cn.lulucar.blog.service.BlogService;
@@ -16,14 +15,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.crypto.URIReferenceException;
-import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Map;
 
 /**
@@ -246,13 +241,13 @@ public class BlogController {
         String newFileName = FileNameGenerator.generateNewFileName(fileName);
         log.debug("新文件名称：{}",newFileName);
         // 创建文件
-        File destFile = new File(Constants.FILE_UPLOAD_DIC + newFileName);
+        File destFile = new File(Constants.getFileUploadPath() + newFileName);
         log.debug("目标文件名称：{}",destFile);
         // 生成文件URL
         String fileUrl = UrlUtil.getHost(new URI(request.getRequestURI() )) + "/upload/" + newFileName;
         log.debug("文件url：{}",fileUrl);
         // 文件存放目录
-        File fileDirectory = new File(Constants.FILE_UPLOAD_DIC);
+        File fileDirectory = new File(Constants.getFileUploadPath());
         log.debug("文件目录：{}",fileDirectory);
         // 确保文件目录存在
         try {

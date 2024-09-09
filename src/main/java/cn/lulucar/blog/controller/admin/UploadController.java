@@ -38,10 +38,10 @@ public class UploadController {
         assert fileName != null;
         String newFileName = FileNameGenerator.generateNewFileName(fileName);
         log.debug("文件新名称：{}",newFileName);
-        File fileDirectory = new File(Constants.FILE_UPLOAD_DIC);
+        File fileDirectory = new File(Constants.getFileUploadPath());
         log.debug("文件目录：{}",fileDirectory);
         //创建文件
-        File destFile = new File(Constants.FILE_UPLOAD_DIC + newFileName);
+        File destFile = new File(Constants.getFileUploadPath() + newFileName);
         try {
             if (!fileDirectory.exists()) {
                 if (!fileDirectory.mkdir()) {
