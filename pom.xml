@@ -96,12 +96,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
         </dependency>
-        <!--        minio 分布式存储-->
-        <dependency>
-            <groupId>io.minio</groupId>
-            <artifactId>minio</artifactId>
-            <version>8.5.11</version>
-        </dependency>
+        
     </dependencies>
 
     <build>
