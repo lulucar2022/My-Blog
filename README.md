@@ -32,27 +32,30 @@ ZHENFENG13/My-Blog
 
 ##  项目依赖
 
-- thymeleaf 模板引擎
+- - thymeleaf 模板引擎
 - web 场景启动器（传统 web 结构）
 - session 会话管理
 - hutool 多功能开发工具包 （生成验证码）
 - commonmark 解析器（把 markdown 转为 html）
-- jsoup 解析 html
 - mysql 连接驱动
+- redis 缓存
 - mybatis ORM 框架
-- test 测试
 
 ## 项目目录结构
 
-![image-20240420150159878](https://github.com/lulucar2022/My-Blog/assets/101035386/ee1638a8-f414-457a-9e2d-e9281a3bee38)
+![img.png](img.png)
 
 
 ##  配置文件修改
 
-- 把 properties 文件改成 yaml 文件。
+改为多配置文件：`application-dev.yaml`、`application-prod.yaml`
+
 - 配置数据源 mysql。
 - 配置连接池 hikari。
 - 配置 mybatis。
+- 配置 redis
+
+> 展示 `application-dev.yaml` 内容
 
 ```yaml
 spring:
@@ -128,7 +131,7 @@ logging:
 # 定义文件上传目录  
 file: 
   upload: 
-    dir: E:/upload/
+    path: E:/upload/
 ```
 
 ##  工具类 Utils
@@ -412,113 +415,334 @@ public class Result implements Serializable {
 
 ```java
 public class ResultGenerator {
-    private static final String DEFAULT_SUCCESS_MESSAGE = "SUCCESS";
-    private static final String DEFAULT_FAIL_MESSAGE = "FAIL";
-    private static final int RESULT_CODE_SUCCESS = 200;
-    private static final int RESULT_CODE_SERVER_ERROR = 500;
+  private static final String DEFAULT_SUCCESS_MESSAGE = "SUCCESS";
+  private static final String DEFAULT_FAIL_MESSAGE = "FAIL";
+  private static final int RESULT_CODE_SUCCESS = 200;
+  private static final int RESULT_CODE_SERVER_ERROR = 500;
 
-    public static Result genSuccessResult() {
-        Result result = new Result();
-        result.setResultCode(RESULT_CODE_SUCCESS);
-        result.setMessage(DEFAULT_SUCCESS_MESSAGE);
-        return result;
-    }
+  public static Result genSuccessResult() {
+    Result result = new Result();
+    result.setResultCode(RESULT_CODE_SUCCESS);
+    result.setMessage(DEFAULT_SUCCESS_MESSAGE);
+    return result;
+  }
 
-    public static Result genSuccessResult(String message) {
-        Result result = new Result();
-        result.setResultCode(RESULT_CODE_SUCCESS);
-        result.setMessage(message);
-        return result;
-    }
+  public static Result genSuccessResult(Object data) {
+    Result result = new Result();
+    result.setResultCode(RESULT_CODE_SUCCESS);
+    result.setMessage(DEFAULT_SUCCESS_MESSAGE);
+    result.setData(data);
+    return result;
+  }
 
-    public static Result genSuccessResult(Object data) {
-        Result result = new Result();
-        result.setResultCode(RESULT_CODE_SUCCESS);
-        result.setMessage(DEFAULT_SUCCESS_MESSAGE);
-        result.setData(data);
-        return result;
+  public static Result genFailResult(String message) {
+    Result result = new Result();
+    result.setResultCode(RESULT_CODE_SERVER_ERROR);
+    if (!StringUtils.hasText(message)) {
+      result.setMessage(DEFAULT_FAIL_MESSAGE);
+    } else {
+      result.setMessage(message);
     }
+    return result;
+  }
 
-    public static Result genFailResult(String message) {
-        Result result = new Result();
-        result.setResultCode(RESULT_CODE_SERVER_ERROR);
-        if (!StringUtils.hasText(message)) {
-            result.setMessage(DEFAULT_FAIL_MESSAGE);
-        } else {
-            result.setMessage(message);
-        }
-        return result;
-    }
+  public static Result genErrorResult(int code, String message) {
+    Result result = new Result();
+    result.setResultCode(code);
+    result.setMessage(message);
+    return result;
+  }
 }
 ```
 
+## Redis
 
+### 配置
 
-###  UrlUtil
+#### Redis 序列化配置
 
-> url 工具类
-
-:pencil: 第一个方法是获取有效URL。
-
-:pencil: 第二个方法是替换URL中的无效字符。
+> **序列化配置**
 
 ```java
-public class UrlUtil {
+@Configuration
+public class RedisConfiguration {
+    /**
+     * @param redisConnectionFactory    Redis 自己配置好了连接工厂
+     * 两种连接工厂 Lettuce 和 Jedis
+     * 默认使用 lettuce
+     * @return
+     */
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        //创建一个createObjectMapperConfig对象
+        CreateObjectMapperConfig createObjectMapperConfig = new CreateObjectMapperConfig();
+        // ObjectMapper 转译
+        ObjectMapper objectMapper = createObjectMapperConfig.createObjectMapper();
 
-    public static URI getHost(URI uri) {
-        URI effectiveURI = null;
-        try {
-            effectiveURI = new URI(uri.getScheme(), uri.getUserInfo(), uri.getHost(), uri.getPort(), null, null, null);
-        } catch (Throwable var4) {
-            effectiveURI = null;
-        }
-        return effectiveURI;
-    }
+        // Json 序列化配置
+        Jackson2JsonRedisSerializer<Object> objectJackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
 
-    public static String cleanString(String value) {
-        if (!StringUtils.hasText(value)) {
-            return "";
-        }
-        value = value.toLowerCase();
-        value = value.replaceAll("<", "& lt;").replaceAll(">", "& gt;");
-        value = value.replaceAll("\\(", "& #40;").replaceAll("\\)", "& #41;");
-        value = value.replaceAll("'", "& #39;");
-        value = value.replaceAll("onload", "0nl0ad");
-        value = value.replaceAll("xml", "xm1");
-        value = value.replaceAll("window", "wind0w");
-        value = value.replaceAll("click", "cl1ck");
-        value = value.replaceAll("var", "v0r");
-        value = value.replaceAll("let", "1et");
-        value = value.replaceAll("function", "functi0n");
-        value = value.replaceAll("return", "retu1n");
-        value = value.replaceAll("$", "");
-        value = value.replaceAll("document", "d0cument");
-        value = value.replaceAll("const", "c0nst");
-        value = value.replaceAll("eval\\((.*)\\)", "");
-        value = value.replaceAll("[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']", "\"\"");
-        value = value.replaceAll("script", "scr1pt");
-        value = value.replaceAll("insert", "1nsert");
-        value = value.replaceAll("drop", "dr0p");
-        value = value.replaceAll("create", "cre0ate");
-        value = value.replaceAll("update", "upd0ate");
-        value = value.replaceAll("alter", "a1ter");
-        value = value.replaceAll("from", "fr0m");
-        value = value.replaceAll("where", "wh1re");
-        value = value.replaceAll("database", "data1base");
-        value = value.replaceAll("table", "tab1e");
-        value = value.replaceAll("tb", "tb0");
-        return value;
+        // 设置连接工厂
+        template.setConnectionFactory(redisConnectionFactory);
+        // 把对象转为 JSON 格式
+        template.setDefaultSerializer(objectJackson2JsonRedisSerializer);
+        // key设置StringRedisSerializer序列化
+        template.setKeySerializer(new StringRedisSerializer());
+        // value设置GenericJackson2JsonRedisSerializer序列化
+        template.setValueSerializer(objectJackson2JsonRedisSerializer);
+        // Hash key设置string，value设置json
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(objectJackson2JsonRedisSerializer);
+        return template;
     }
 }
 ```
 
+> **utf-8时间匹配**
 
+```java
+@Component
+public class CreateObjectMapperConfig {
+    /**
+     * 
+     * 自定义 objectMapper
+     */
+    @Bean
+    public ObjectMapper createObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+        objectMapper.registerModule(new JavaTimeModule());
+        // 设置序列化规则
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.activateDefaultTyping(
+                LaissezFaireSubTypeValidator.instance,
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.WRAPPER_ARRAY
+        );
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        return objectMapper;
+    }
+}
+```
+
+#### Redis 工具类封装操作
+
+**封装常用方法**
+
+```java
+@Component
+public class RedisUtils {
+    @Resource
+    private RedisTemplate<String,Object> redisTemplate;
+    
+    // ================= string 数据类型 ==================
+
+    // 设置键值对
+    public void set(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    // 设置键值对并指定过期时间
+    public void set(String key, Object value, long timeout, TimeUnit unit) {
+        redisTemplate.opsForValue().set(key, value, timeout, unit);
+    }
+
+    // 设置键值对并指定过期时间
+    public void set(String key, Object value, long seconds) {
+        redisTemplate.opsForValue().set(key, value, seconds, TimeUnit.SECONDS);
+    }
+    
+    // 获取值
+    public Object get(String key) {
+        return redisTemplate.opsForValue().get(key);
+    }
+    // 获取多个值
+    public List<Object> mGet(String... keys) {
+        return redisTemplate.opsForValue().multiGet(List.of(keys));
+    }
+    // 获取值
+    public String getString(String key) {
+        Object obj = redisTemplate.opsForValue().get(key);
+        return obj == null ? null : obj.toString();
+    }
+
+    // 删除键
+    public Boolean delete(String key) {
+        return redisTemplate.delete(key);
+    }
+
+    // 判断键是否存在
+    public Boolean hasKey(String key) {
+        return redisTemplate.hasKey(key);
+    }
+
+    // 如果不存在，则设置
+    public Boolean setNx(String key, Object value) {
+        return redisTemplate.opsForValue().setIfAbsent(key, value);
+    }
+
+    // 如果不存在，则设置，附带过期时间
+    public Boolean tryLock(String lockKey, String requestId, long seconds) {
+        return redisTemplate.opsForValue().setIfAbsent(lockKey, requestId, seconds, TimeUnit.SECONDS);
+    }
+
+    // 如果不存在，则设置，附带过期时间
+    public Boolean tryLock(String lockKey, String requestId, long timeout, TimeUnit unit) {
+        return redisTemplate.opsForValue().setIfAbsent(lockKey, requestId, timeout, unit);
+    }
+
+    // ================== list 数据类型 ==================
+    
+    // list 存入
+    public void rPush(String key, Object value) {
+        redisTemplate.opsForList().rightPush(key, value);
+    }
+    public void rPushAll(String key, List<?> values) {
+        values.forEach(value -> redisTemplate.opsForList().rightPush(key, value));
+    }
+    // list 取出
+    public List<Object> lRange(String key, long start, long end) {
+        return redisTemplate.opsForList().range(key, start, end);
+    }
+    
+    
+    
+    // =================== hash 数据类型 ==================
+    
+}
+```
+
+### redis 缓存预热
+
+**实施**
+
+使用 SpringBoot 的 `@PostConstruct` 注解，在项目启动后自动执行方法。
+
+**具体代码**
+
+```java
+@Service
+@Slf4j
+public class redisService {
+    private static final String BLOG_KEY_PREFIX = "blog:";
+    private static final String BLOG_ID_LIST_KEY = "blog:id:list";
+    private final RedisUtils redisUtils;
+    private final BlogMapper blogMapper;
+
+    public redisService(RedisUtils redisUtils, BlogMapper blogMapper) {
+        this.redisUtils = redisUtils;
+        this.blogMapper = blogMapper;
+    }
+
+    /**
+     * 在 Spring Bean 初始化完成后自动执行的方法。
+     */
+    @PostConstruct
+    public void initArticleIdsCache() {
+        setBlogIds();
+        setBlogList();
+    }
+    // =================== blog ===================
+
+    /**
+     * 将所有博客的 ID 存储到 Redis 中。
+     */
+    public void setBlogIds() {
+        List<Integer> allBlogIds = blogMapper.getAllBlogIds();
+        try {
+            // 不存在则添加
+            if (!redisUtils.hasKey(BLOG_ID_LIST_KEY)){
+                redisUtils.rPushAll(BLOG_ID_LIST_KEY, allBlogIds);
+            }
+        } catch (Exception e) {
+            log.error("Redis 运行出错，{}",e.getMessage());
+        }
+    }
+
+    /**
+     * 将所有博客对象存储到 Redis 中。
+     */
+    public void setBlogList() {
+        try {
+            List<Object> list = redisUtils.lRange(BLOG_ID_LIST_KEY, 0, -1);
+            List<Integer> blogIds = list.stream().map(obj -> (Integer) obj).toList();
+            blogIds.forEach(id -> {
+                if (!redisUtils.hasKey(BLOG_KEY_PREFIX+id)) {
+                    redisUtils.set(BLOG_KEY_PREFIX+id,blogMapper.selectByPrimaryKey(Long.valueOf(id)));
+                }
+            });
+        } catch (Exception e) {
+            log.error("Redis 运行出错，{}",e.getMessage());
+        }
+    }
+}
+```
+
+**总结**
+
+缓存预热就是程序启动后，主动将相关的数据直接加载到缓存。避免在用户请求的时候，先查询数据库，然后再将数据缓存的问题！用户直接查询事先被预热的缓存数据！从而减少了缓存穿透和缓存击穿的情况，也缓解了SQL服务器的压力。
+
+### redis 更新缓存
+
+采用先更新数据库，再删除缓存。
+
+**更新策略**：
+
+- **内存淘汰**：redis自动进行，当redis内存达到咱们设定的max-memery的时候，会自动触发淘汰机制，淘汰掉一些不重要的数据(可以自己设置策略方式)。
+- **超时剔除**：当给 redis 设置了过期时间 TTL 之后，redis 会将超时的数据进行删除。
+- **主动更新**：手动调用方法把缓存删除，解决缓存和数据库不一致问题。
+
+
+
+### redis 缓存穿透
+
+**定义**：缓存穿透是指客户端请求的数据在缓存中和数据库中都不存在，这样缓存永远不会生效，这些请求都会打到数据库。（穿透指的是穿透了缓存，直击数据库）
+
+**解决方案**：
+
+- 缓存空对象（该项目采用）
+
+  - 优点：简单，方便
+  - 缺点：额外内存消耗
+
+  > 在进行校验 key 是否存在后，对第一次未查询到结果时，对该 key 设置一个2分钟过期的空 value，
+
+- 布隆过滤器
+
+  - 优点：内存占用少，没有多余的 key
+  - 缺点：实现复杂
+
+### redis 缓存击穿
+
+**定义**：缓存击穿问题也叫**热点Key**问题，就是一个被**高并发访问**并且缓存重建业务较复杂的key突然失效了，无数的请求访问会在瞬间给数据库带来巨大的冲击。
+
+**解决方案**：
+
+- 互斥锁
+  - 利用 **redis** 的 **setnx** 方法来表示获取锁，该方法含义是 redis 中如果没有这个 key，则插入成功，返回1，在stringRedisTemplate中返回true， 如果有这个key则插入失败，则返回0，在stringRedisTemplate返回false，我们可以通过true，或者是false，来表示是否有线程成功插入key，成功插入的key的线程我们认为他就是获得到锁的线程。
+- 逻辑过期
+  - 当用户开始查询redis时，判断是否命中，如果没有命中则直接返回空数据，不查询数据库，而一旦命中后，将value取出，判断value中的过期时间是否满足，如果没有过期，则直接返回redis中的数据，如果过期，则在开启独立线程后直接返回之前的数据，独立线程去重构数据，重构完成后释放互斥锁。
+
+### redis 缓存雪崩
+
+**定义**：缓存雪崩是指在同一时段**大量的缓存key同时失效或者Redis服务宕机**，导致大量请求到达数据库，带来巨大压力。
+
+**解决方案**：
+
+- 给不同的 key 的 TTL 添加随机值
+
+  > 对项目运行阶段生产的文章采用随机生存时间。
+
+- 让热点数据永不过期
+
+  > 项目使用 `@PostConstruct` 在组建初始化完成后，把博客文章缓存到 Redis 中。
 
 ##  功能模块
 
-**先去理解这个项目的功能模块，理顺大体意思，再自己写**
-
-**注意**：大方向还是跟着项目走，不懂的还是不要乱改。就是在当作自己在学这个项目用到的技术，不要画蛇添足。
 
 ###  **AdminUser** 模块:tada:
 
@@ -566,7 +790,7 @@ blog 的 saveBlog 需要用到 分类，标签，博客标签关联
 
 :dart: 期望功能：
 
-> :one: 可以直接删除标签，同时修改blog与tag的关联表
+> :one: 可以直接删除标签，同时修改blog与tag的关联表 :ok:
 >
 > :two: 添加搜索功能，按名称搜索
 
