@@ -1,4 +1,4 @@
-package cn.lulucar.blog.controller.vo;
+package cn.lulucar.blog.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

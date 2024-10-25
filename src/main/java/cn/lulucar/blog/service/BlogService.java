@@ -1,8 +1,8 @@
 package cn.lulucar.blog.service;
 
 
-import cn.lulucar.blog.controller.vo.BlogDetailVO;
-import cn.lulucar.blog.controller.vo.SimpleBlogListVO;
+import cn.lulucar.blog.vo.BlogDetailVO;
+import cn.lulucar.blog.vo.SimpleBlogListVO;
 import cn.lulucar.blog.entity.Blog;
 import cn.lulucar.blog.util.PageQueryUtil;
 import cn.lulucar.blog.util.PageResult;

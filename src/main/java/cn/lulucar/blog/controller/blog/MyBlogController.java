@@ -1,7 +1,7 @@
 package cn.lulucar.blog.controller.blog;
 
 import cn.hutool.captcha.ShearCaptcha;
-import cn.lulucar.blog.controller.vo.BlogDetailVO;
+import cn.lulucar.blog.vo.BlogDetailVO;
 import cn.lulucar.blog.entity.BlogComment;
 import cn.lulucar.blog.entity.BlogLink;
 import cn.lulucar.blog.service.*;

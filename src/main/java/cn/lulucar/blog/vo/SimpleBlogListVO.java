@@ -1,4 +1,4 @@
-package cn.lulucar.blog.controller.vo;
+package cn.lulucar.blog.vo;
 
 import lombok.Data;
 import lombok.Getter;
