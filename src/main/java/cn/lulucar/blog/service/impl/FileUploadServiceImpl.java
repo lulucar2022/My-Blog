@@ -28,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class FileUploadServiceImpl implements FileUploadService {
 
-    @Async
+    @Async("asyncTaskExecutor")
     public CompletableFuture<Result> uploadFileAsync(MultipartFile file, String newFileName, HttpServletRequest request) {
         return CompletableFuture.supplyAsync(() -> {
             File fileDirectory = new File(Constants.getFileUploadPath());
