@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lulucar.blog.mapper.RateLimitLogMapper">
+    <insert id="insert" parameterType="cn.lulucar.blog.entity.RateLimitLog">
+        INSERT INTO rate_limit_log (ip, user_id, uri, request_time)
+        VALUES (#{ip}, #{userId}, #{uri}, #{requestTime})
+    </insert>
+</mapper>

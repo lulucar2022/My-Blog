@@ -1,6 +1,8 @@
 package cn.lulucar.blog.interceptor;
 
-import cn.lulucar.blog.entity.TokenBucketRateLimiter;
+import cn.lulucar.blog.entity.RateLimitLog;
+import cn.lulucar.blog.limit.TokenBucketRateLimiter;
+import cn.lulucar.blog.mapper.RateLimitLogMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.time.LocalDateTime;
 
 /**
  * @author wenxiaolan
@@ -20,9 +24,12 @@ import org.springframework.web.servlet.ModelAndView;
 @Component
 public class TokenBucketInterceptor implements HandlerInterceptor {
     private final TokenBucketRateLimiter rateLimiter;
+    private final RateLimitLogMapper rateLimitLogMapper;
+    
     @Autowired
-    public TokenBucketInterceptor(TokenBucketRateLimiter rateLimiter) {
+    public TokenBucketInterceptor(TokenBucketRateLimiter rateLimiter, RateLimitLogMapper rateLimitLogMapper) {
         this.rateLimiter = rateLimiter;
+        this.rateLimitLogMapper = rateLimitLogMapper;
     }
 
     @Override
@@ -30,10 +37,25 @@ public class TokenBucketInterceptor implements HandlerInterceptor {
         if (handler instanceof HandlerMethod) {
             // 获取客户端IP或其他标识符
             String ip = request.getRemoteAddr();
-
+            String userId = request.getHeader("User-ID");
+            String uri = request.getRequestURI();
+            
+            // 根据需求选择不同的维度进行限流，这里以 IP 和 接口路径组合为例
+            String key = ip + "_" + uri;
+            
             // 检查是否有足够的令牌
-            if (!rateLimiter.allowRequest(ip)) {
-                response.setStatus(429);    // 请求频率过高
+            if (!rateLimiter.allowRequest(key)) {
+                // 请求频率过高
+                response.setStatus(429);
+                
+                // 限流日志记录
+                RateLimitLog log = new RateLimitLog();
+                log.setIp(ip);
+                log.setUserId(userId);
+                log.setUri(uri);
+                log.setRequestTime(LocalDateTime.now());
+                rateLimitLogMapper.insert(log);
+                
                 return false;
             }
         }

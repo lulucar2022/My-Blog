@@ -1,6 +1,6 @@
 package cn.lulucar.blog.listener;
 
-import cn.lulucar.blog.entity.TokenBucketRateLimiter;
+import cn.lulucar.blog.limit.TokenBucketRateLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;

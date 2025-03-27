@@ -1,10 +1,13 @@
-package cn.lulucar.blog.entity;
+package cn.lulucar.blog.limit;
 
+import cn.lulucar.blog.entity.RateLimitRule;
+import cn.lulucar.blog.mapper.RateLimitRuleMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -20,28 +23,40 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class TokenBucketRateLimiter {
     private final ConcurrentHashMap<String, TokenBucket> buckets = new ConcurrentHashMap<>();
-    private final int defaultCapacity;
-    private final double defaultRefillRate;
     private final ScheduledExecutorService scheduler;
-
+    private final RateLimitRuleMapper rateLimitRuleMapper;
     @Autowired
-    public TokenBucketRateLimiter(@Value("${token.bucket.capacity}") int defaultCapacity,
-                                  @Value("${token.bucket.refillRate}") double defaultRefillRate) {
-        this.defaultCapacity = defaultCapacity;
-        this.defaultRefillRate = defaultRefillRate;
+    public TokenBucketRateLimiter(RateLimitRuleMapper rateLimitRuleMapper) {
+        
+        this.rateLimitRuleMapper = rateLimitRuleMapper;
         this.scheduler = Executors.newSingleThreadScheduledExecutor();
+        loadRules();
     }
 
-    public synchronized boolean allowRequest(String ip) {
-        TokenBucket bucket = buckets.computeIfAbsent(ip, key -> createNewBucket());
-        log.info("Token bucket for IP: {} has {} tokens", ip, bucket.tokenCount);
+    private void loadRules() {
+        List<RateLimitRule> rules = rateLimitRuleMapper.findAll();
+        for (RateLimitRule rule : rules) {
+            String key = rule.getDimension();
+            TokenBucket bucket = new TokenBucket(rule.getCapacity(), rule.getRefillRate(), scheduler);
+            bucket.startRefilling();
+            buckets.put(key, bucket);
+        }
+    }
+
+    public synchronized boolean allowRequest(String key) {
+        TokenBucket bucket = buckets.get(key);
+        if (bucket == null) {
+            bucket = createDefaultBucket();
+            buckets.put(key, bucket);
+        }
         return bucket.allowRequest();
     }
 
-    private synchronized TokenBucket createNewBucket() {
+    private synchronized TokenBucket createDefaultBucket() {
+        int defaultCapacity = 10;
+        double defaultRefillRate = 1;
         TokenBucket bucket = new TokenBucket(defaultCapacity, defaultRefillRate, scheduler);
         bucket.startRefilling();
-        log.info("Created new token bucket for IP: {}", bucket);
         return bucket;
     }
 
